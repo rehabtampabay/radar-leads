@@ -6,7 +6,7 @@
 <title>RADAR — Pasco County</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f4f5f9;color:#111827;font-size:13px;min-height:100vh;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#dce1ec;color:#111827;font-size:13px;min-height:100vh;}
 a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 
 /* ── HEADER ── */
@@ -23,7 +23,7 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 #alert-bar{display:none;background:#dc2626;color:#fff;padding:8px 24px;font-size:.78rem;font-weight:600;align-items:center;gap:6px;flex-wrap:wrap;}
 
 /* ── TOOLBAR ── */
-.toolbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:52px;z-index:200;}
+.toolbar{background:#f8f9fc;border-bottom:1px solid #cdd3e0;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:52px;z-index:200;}
 .toolbar input{border:1px solid #d1d5db;border-radius:7px;padding:6px 11px;font-size:.8rem;width:210px;background:#f9fafb;outline:none;transition:.15s;}
 .toolbar input:focus{border-color:#3b82f6;background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.12);}
 .toolbar select{border:1px solid #d1d5db;border-radius:7px;padding:6px 10px;font-size:.78rem;background:#f9fafb;color:#374151;cursor:pointer;outline:none;}
@@ -33,11 +33,11 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .chk-label{font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;}
 
 /* ── LIST ── */
-.list{padding:14px 24px;display:flex;flex-direction:column;gap:3px;}
+.list{padding:14px 24px;display:flex;flex-direction:column;gap:4px;}
 
 /* ── LEAD ROW ── */
-.lrow{border-radius:10px;overflow:hidden;background:#fff;border:1px solid #e5e7eb;transition:box-shadow .12s;}
-.lrow:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.lrow{border-radius:10px;overflow:hidden;background:#fff;border:1px solid #d1d5db;transition:box-shadow .12s;}
+.lrow:hover{box-shadow:0 3px 16px rgba(0,0,0,.13);}
 .lrow.is-removed{opacity:.4;filter:grayscale(.5);}
 
 .lrow-head{display:grid;grid-template-columns:3px 52px minmax(0,1fr) 100px 90px 110px 28px;align-items:center;cursor:pointer;min-height:48px;gap:0;user-select:none;}
@@ -92,12 +92,12 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .larrow.open{transform:rotate(90deg);}
 
 /* ── DETAIL PANEL ── */
-.lpanel{display:none;border-top:1px solid #f3f4f6;}
+.lpanel{display:none;border-top:1px solid #e5e7eb;}
 .lpanel.open{display:block;}
-.lpanel-inner{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.lpanel-inner{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;background:#e8ecf4;}
 
 /* ── PANEL CARD ── */
-.pc{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;}
+.pc{background:#f0f3f9;border:1px solid #dde3ef;border-radius:8px;padding:12px 14px;}
 .pc-full{grid-column:1/-1;}
 .pc-half{grid-column:span 2;}
 .pc-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#9ca3af;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
@@ -122,9 +122,9 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 
 /* people */
 .people-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.person-card{border-radius:6px;padding:10px 12px;border:1px solid #e5e7eb;background:#fff;}
+.person-card{border-radius:6px;padding:10px 12px;border:1px solid #d1d5db;background:#fff;}
 .person-card.dec{border-left:3px solid #dc2626;}
-.person-card.pr{border-left:3px solid #16a34a;background:#f0fdf4;}
+.person-card.pr{border-left:3px solid #16a34a;background:#ecfdf5;}
 .pc-person-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
 .pc-person-label.dec{color:#dc2626;}
 .pc-person-label.pr{color:#16a34a;}
@@ -136,7 +136,7 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .fi-group{display:flex;flex-direction:column;gap:5px;}
 .fi-row{display:flex;flex-direction:column;gap:2px;}
 .fi-lbl{font-size:.62rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
-.fi{border:1px solid #e5e7eb;border-radius:5px;padding:4px 8px;font-size:.78rem;color:#111827;background:#fff;width:100%;font-family:inherit;transition:.12s;}
+.fi{border:1px solid #c9d0de;border-radius:5px;padding:4px 8px;font-size:.78rem;color:#111827;background:#fff;width:100%;font-family:inherit;transition:.12s;}
 .fi:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.1);}
 .pr .fi{border-color:#bbf7d0;}
 .pr .fi:focus{border-color:#16a34a;box-shadow:0 0 0 2px rgba(22,163,74,.1);}
@@ -415,7 +415,7 @@ function buildRow(l){
       <div class="pc-title"><span class="pc-title-icon">⚖️</span> Attorney & Contact</div>
       ${l.attyName?`<div class="ir"><span class="ir-lbl">Attorney</span><span class="ir-val">${l.attyName}</span></div>`:'<div class="ir"><span class="ir-lbl">Attorney</span><span class="ir-val" style="color:#9ca3af;">Not listed</span></div>'}
       ${l.attyPhone?`<div class="ir"><span class="ir-lbl">Phone</span><span class="ir-val"><a href="tel:${l.attyPhone}">${l.attyPhone}</a></span></div>`:''}
-      ${l.attyEmail?`<div class="ir"><span class="ir-lbl">Email</span><span class="ir-val"><a href="mailto:${l.attyEmail}">${l.attyEmail}</a></span></div>`:''}
+      ${l.attyEmail?`<div class="ir"><span class="ir-lbl">Email</span><span class="ir-val"><a href="mailto:${l.attyEmail}">${l.attyEmail}</a></span></div>`:`<div class="ir"><span class="ir-lbl">Email</span><span class="ir-val" style="color:#9ca3af;">Not listed</span></div>`}
       ${l.plaintiff?`<div class="ir"><span class="ir-lbl">Lender</span><span class="ir-val">${l.plaintiff}</span></div>`:''}
       ${l.addr!==l.property?`<div class="ir"><span class="ir-lbl">Full Address</span><span class="ir-val">${l.addr}</span></div>`:''}
     </div>
