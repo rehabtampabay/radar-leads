@@ -5,457 +5,486 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RADAR — Pasco County Lead Board</title>
 <style>
-:root { color-scheme: light; }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f8; color: #1a1a2e; font-size: 14px; }
+:root { color-scheme: light; --urgent:#c0392b; --hot:#e67e22; --warm:#d4ac0d; --watch:#95a5a6; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f8;color:#1a1a2e;font-size:13px;}
 
-/* ── HEADER ── */
-.header { background: linear-gradient(135deg,#1a1a2e 0%,#2c3e6b 100%); color:#fff; padding: 16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,.25); }
-.header-left h1 { font-size:1.25rem; font-weight:800; letter-spacing:.5px; }
-.header-left .sub { font-size:.78rem; color:#aac4ff; margin-top:2px; }
-.header-right { display:flex; gap:8px; align-items:center; }
-.btn-sm { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; padding:5px 12px; border-radius:6px; font-size:.78rem; cursor:pointer; transition:.15s; font-weight:600; }
-.btn-sm:hover { background:rgba(255,255,255,.25); }
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#1a1a2e,#2c3e6b);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.hdr h1{font-size:1.1rem;font-weight:800;}
+.hdr .sub{font-size:.72rem;color:#aac4ff;margin-top:2px;}
+.hdr-btns{display:flex;gap:6px;}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;font-weight:600;}
+.hbtn:hover{background:rgba(255,255,255,.25);}
 
-/* ── ALERT BAR ── */
-#alert-bar { background:#c0392b; color:#fff; padding:9px 24px; font-size:.84rem; font-weight:700; display:none; align-items:center; gap:8px; flex-wrap:wrap; border-bottom:3px solid #922b21; }
+/* ALERT */
+#alert-bar{background:#c0392b;color:#fff;padding:7px 20px;font-size:.8rem;font-weight:700;display:none;gap:8px;flex-wrap:wrap;border-bottom:3px solid #922b21;}
 
-/* ── CONTROLS ── */
-.controls { background:#fff; border-bottom:1px solid #dde; padding:12px 24px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 1px 4px rgba(0,0,0,.08); }
-.controls input, .controls select { border:1px solid #ccc; border-radius:6px; padding:6px 10px; font-size:.84rem; background:#fff; }
-.controls input { width:220px; }
-.count-badge { margin-left:auto; font-size:.78rem; color:#666; font-weight:700; background:#f0f2f8; padding:4px 10px; border-radius:12px; }
+/* CONTROLS */
+.ctrl{background:#fff;border-bottom:1px solid #dde;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.ctrl input,.ctrl select{border:1px solid #ccc;border-radius:5px;padding:5px 9px;font-size:.8rem;background:#fff;}
+.ctrl input{width:200px;}
+.cbadge{margin-left:auto;font-size:.75rem;color:#666;font-weight:700;background:#f0f2f8;padding:3px 9px;border-radius:10px;}
 
-/* ── GRID ── */
-.grid { padding:16px 20px; display:grid; grid-template-columns:repeat(auto-fill, minmax(370px, 1fr)); gap:14px; }
+/* TABLE */
+.tbl{padding:12px 20px;display:flex;flex-direction:column;gap:0;}
 
-/* ── CARD ── */
-.card { background:#fff; border-radius:12px; border:1px solid #e0e4f0; box-shadow:0 1px 4px rgba(0,0,0,.06); overflow:hidden; transition:box-shadow .15s; }
-.card:hover { box-shadow:0 4px 20px rgba(0,0,0,.12); }
-.card.urgent { border-left:4px solid #c0392b; }
-.card.hot    { border-left:4px solid #e67e22; }
-.card.warm   { border-left:4px solid #d4ac0d; }
-.card.watch  { border-left:4px solid #95a5a6; }
-.card.passed { border-left:4px solid #bdc3c7; opacity:.7; }
+/* ROW */
+.row-wrap{margin-bottom:4px;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.row{display:grid;grid-template-columns:4px 48px 1fr auto auto 90px 22px;align-items:center;background:#fff;cursor:pointer;border:1px solid #e4e6ef;border-radius:8px;transition:box-shadow .12s;user-select:none;gap:0;}
+.row:hover{box-shadow:0 2px 10px rgba(0,0,0,.1);}
+.row.open{border-radius:8px 8px 0 0;border-bottom-color:transparent;}
 
-/* card header */
-.card-head { padding:12px 14px 8px; }
-.card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:6px; }
-.card-name { font-weight:700; font-size:.94rem; line-height:1.3; flex:1; }
-.score-pill { font-size:.72rem; font-weight:800; padding:3px 9px; border-radius:20px; color:#fff; white-space:nowrap; }
-.s90 { background:#c0392b; }
-.s80 { background:#c05621; }
-.s70 { background:#b7791f; }
-.s60 { background:#4a5568; }
-.sw  { background:#95a5a6; }
+/* row cells */
+.row-bar{width:4px;height:100%;min-height:46px;border-radius:8px 0 0 8px;}
+.bar-urgent{background:var(--urgent);}
+.bar-hot{background:var(--hot);}
+.bar-warm{background:var(--warm);}
+.bar-watch{background:var(--watch);}
+.bar-passed{background:#ddd;}
 
-.card-addr { font-size:.78rem; color:#555; margin-bottom:7px; line-height:1.4; }
-.tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
-.tag { font-size:.68rem; font-weight:700; padding:2px 7px; border-radius:10px; text-transform:uppercase; letter-spacing:.3px; }
-.tFORECLOSURE { background:#fde8e8; color:#c0392b; }
-.tPROBATE     { background:#d6eaf8; color:#1a5276; }
-.tTAX\ DEED   { background:#fef9e7; color:#9a7d0a; }
-.tNOA         { background:#f0e6fd; color:#6c3483; }
-.tMOBILE\ HOME{ background:#d5f5e3; color:#1e8449; }
-.tPUBLIC\ SALE{ background:#fde8e8; color:#922b21; }
-.tPERMIT      { background:#eaecee; color:#566573; }
-.tZONING      { background:#eaecee; color:#566573; }
-.tCDD         { background:#eaecee; color:#566573; }
-.tWATCH       { background:#eaecee; color:#95a5a6; }
-.tMay15 { background:#eaf0ff; color:#1a5276; }
-.tMay29 { background:#f5eaff; color:#4a235a; }
+.row-score{padding:0 8px;text-align:center;font-size:.8rem;font-weight:800;width:48px;}
+.sc-urgent{color:var(--urgent);}
+.sc-hot{color:var(--hot);}
+.sc-warm{color:var(--warm);}
+.sc-watch{color:#aaa;}
 
-.deadline-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
-.deadline { font-size:.8rem; font-weight:800; }
-.deadline.crit    { color:#c0392b; }
-.deadline.soon    { color:#e67e22; }
-.deadline.future  { color:#1e8449; }
-.deadline.passed  { color:#aaa; text-decoration:line-through; }
+.row-main{padding:10px 8px 10px 4px;min-width:0;}
+.row-name{font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row-sub{font-size:.72rem;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-.atty-info { font-size:.74rem; color:#666; padding:4px 0 6px; border-top:1px solid #f0f0f5; margin-top:4px; line-height:1.5; }
+.row-type{padding:0 8px;white-space:nowrap;}
+.type-pill{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px;}
+.tFORECLOSURE{background:#fde8e8;color:#c0392b;}
+.tPROBATE{background:#d6eaf8;color:#1a5276;}
+.tTAX-DEED{background:#fef9e7;color:#9a7d0a;}
+.tNOA{background:#f0e6fd;color:#6c3483;}
+.tMOBILE-HOME{background:#d5f5e3;color:#1e8449;}
+.tPUBLIC-SALE{background:#fde8e8;color:#922b21;}
+.tWATCH{background:#eee;color:#888;}
+.tOTHER{background:#eee;color:#666;}
 
-/* ── QUICK LINKS ── */
-.quick-links { display:flex; gap:6px; padding:8px 14px; background:#f8f9fd; border-top:1px solid #eef; flex-wrap:wrap; }
-.ql-btn { font-size:.72rem; font-weight:700; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:3px; transition:.1s; border:1px solid transparent; cursor:pointer; }
-.ql-tps  { background:#eaf2ff; color:#2471a3; border-color:#aed6f1; }
-.ql-pa   { background:#eafaf1; color:#1e8449; border-color:#a9dfbf; }
-.ql-pdf  { background:#fef9e7; color:#9a7d0a; border-color:#f9e79f; }
-.ql-btn:hover { filter:brightness(.93); }
+.row-dl{padding:0 8px;text-align:right;white-space:nowrap;min-width:90px;}
+.dl-label{font-size:.78rem;font-weight:700;}
+.dl-days{font-size:.68rem;margin-top:1px;}
+.dl-urgent{color:var(--urgent);}
+.dl-hot{color:var(--hot);}
+.dl-ok{color:#1e8449;}
+.dl-passed{color:#bbb;}
 
-/* ── PR SECTION ── */
-.pr-section { padding:8px 14px 10px; background:#f0f4ff; border-top:1px solid #dde4fa; }
-.pr-toggle { font-size:.74rem; font-weight:700; color:#2471a3; cursor:pointer; user-select:none; display:flex; align-items:center; gap:4px; margin-bottom:0; }
-.pr-toggle::before { content:'▶'; font-size:.6rem; transition:.15s; }
-.pr-toggle.open::before { content:'▼'; }
-.pr-fields { display:none; margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:5px; }
-.pr-fields.visible { display:grid; }
-.pr-fields label { font-size:.68rem; color:#555; font-weight:600; text-transform:uppercase; letter-spacing:.3px; }
-.pr-fields input, .pr-fields textarea { width:100%; border:1px solid #ccd6f6; border-radius:5px; padding:4px 7px; font-size:.78rem; background:#fff; font-family:inherit; resize:none; }
-.pr-fields input:focus, .pr-fields textarea:focus { outline:none; border-color:#2471a3; box-shadow:0 0 0 2px rgba(36,113,163,.15); }
-.pr-full { grid-column:1/-1; }
-.pr-note { font-size:.68rem; color:#e67e22; font-weight:700; margin-top:4px; grid-column:1/-1; }
+.row-ghl{min-width:90px;padding:0 6px;}
+.ghl-pill{font-size:.68rem;font-weight:700;padding:3px 7px;border-radius:6px;text-align:center;cursor:pointer;display:block;white-space:nowrap;}
+.gns{background:#f5f5f5;color:#888;border:1px solid #ddd;}
+.gsent{background:#eaf2ff;color:#2471a3;border:1px solid #aed6f1;}
+.gpip{background:#eafaf1;color:#1e8449;border:1px solid #a9dfbf;}
+.gcont{background:#fef9e7;color:#9a7d0a;border:1px solid #f9e79f;}
+.gclosed{background:#f0f0f0;color:#555;border:1px solid #ccc;}
+.gdead{background:#fafafa;color:#bbb;border:1px solid #eee;}
 
-/* ── GHL STATUS ── */
-.ghl-bar { display:flex; align-items:center; gap:8px; padding:8px 14px; border-top:1px solid #dde4fa; background:#f8fff9; }
-.ghl-label { font-size:.72rem; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
-.ghl-select { flex:1; border:1px solid #a9dfbf; border-radius:6px; padding:4px 8px; font-size:.78rem; font-weight:600; background:#fff; cursor:pointer; }
-.ghl-select.ns  { border-color:#e0e0e0; color:#999; }
-.ghl-select.sent { border-color:#aed6f1; color:#2471a3; background:#eaf2ff; }
-.ghl-select.pip  { border-color:#a9dfbf; color:#1e8449; background:#eafaf1; }
-.ghl-select.cont { border-color:#f9c74f; color:#9a7d0a; background:#fef9e7; }
-.ghl-select.closed { border-color:#aaa; color:#444; background:#f0f0f0; }
-.ghl-select.dead { border-color:#e0e0e0; color:#bbb; background:#f9f9f9; text-decoration:line-through; }
+.row-arrow{padding:0 8px;color:#bbb;font-size:.9rem;transition:transform .2s;}
+.row-arrow.open{transform:rotate(90deg);}
 
-.pdf-input { flex:1; border:1px solid #f9e79f; border-radius:5px; padding:3px 7px; font-size:.75rem; background:#fff; }
+/* DETAIL PANEL */
+.detail{background:#f8f9fd;border:1px solid #e4e6ef;border-top:none;border-radius:0 0 8px 8px;display:none;}
+.detail.open{display:block;}
+.detail-inner{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
-.empty-state { grid-column:1/-1; text-align:center; padding:60px 20px; color:#aaa; }
+/* sections inside detail */
+.dsec{background:#fff;border-radius:7px;border:1px solid #eaecf5;padding:12px 14px;}
+.dsec-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#888;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.dsec-title span{font-size:.8rem;}
+.drow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid #f5f5f8;}
+.drow:last-child{border-bottom:none;}
+.dlbl{font-size:.72rem;color:#888;font-weight:600;white-space:nowrap;min-width:90px;}
+.dval{font-size:.78rem;color:#1a1a2e;font-weight:500;text-align:right;word-break:break-word;}
+.dval a{color:#2471a3;text-decoration:none;}
+.dval a:hover{text-decoration:underline;}
+.dval.urgent{color:var(--urgent);font-weight:700;}
+.dval.hot{color:var(--hot);font-weight:700;}
 
-footer { text-align:center; padding:20px; font-size:.72rem; color:#aaa; }
+/* heat signals */
+.signals{display:flex;flex-direction:column;gap:5px;margin-top:2px;}
+.signal{display:flex;align-items:flex-start;gap:6px;font-size:.76rem;color:#444;line-height:1.4;}
+.sig-dot{width:6px;height:6px;border-radius:50%;background:#e67e22;flex-shrink:0;margin-top:4px;}
+.sig-dot.red{background:var(--urgent);}
+.sig-dot.green{background:#1e8449;}
+
+/* people section - full width */
+.dsec.people{grid-column:1/-1;}
+.people-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.person-box{background:#f8f9fd;border-radius:6px;padding:10px 12px;border:1px solid #eaecf5;}
+.person-box.pr-box{background:#eafaf1;border-color:#a9dfbf;}
+.person-label{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.deceased-label{color:#c0392b;}
+.pr-label{color:#1e8449;}
+.person-name{font-size:.85rem;font-weight:700;color:#1a1a2e;margin-bottom:6px;}
+.pr-note{font-size:.68rem;color:#1e8449;font-weight:700;margin-bottom:8px;}
+.field-group{display:flex;flex-direction:column;gap:4px;}
+.field-row{display:flex;flex-direction:column;gap:2px;}
+.field-label{font-size:.65rem;color:#888;font-weight:600;text-transform:uppercase;}
+.field-input{border:1px solid #dde;border-radius:4px;padding:4px 7px;font-size:.78rem;background:#fff;width:100%;font-family:inherit;}
+.field-input:focus{outline:none;border-color:#2471a3;box-shadow:0 0 0 2px rgba(36,113,163,.12);}
+.pr-box .field-input{border-color:#a9dfbf;}
+.pr-box .field-input:focus{border-color:#1e8449;box-shadow:0 0 0 2px rgba(30,132,73,.12);}
+
+/* links section */
+.dsec.links{grid-column:1/-1;}
+.links-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.lbtn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;font-size:.76rem;font-weight:700;text-decoration:none;cursor:pointer;border:1px solid transparent;}
+.lbtn-tps{background:#eaf2ff;color:#2471a3;border-color:#aed6f1;}
+.lbtn-pa{background:#eafaf1;color:#1e8449;border-color:#a9dfbf;}
+.lbtn-pdf{background:#fef9e7;color:#9a7d0a;border-color:#f9e79f;}
+.lbtn-pdf.no-pdf{background:#f8f8f8;color:#aaa;border-color:#ddd;cursor:pointer;}
+.lbtn:hover{filter:brightness(.93);}
+
+/* GHL full */
+.dsec.ghl-sec{grid-column:1/-1;}
+.ghl-full{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ghl-select-full{border:1px solid #ccc;border-radius:6px;padding:5px 10px;font-size:.8rem;background:#fff;font-weight:600;cursor:pointer;min-width:160px;}
+.notes-area{flex:1;min-width:180px;border:1px solid #dde;border-radius:5px;padding:5px 8px;font-size:.78rem;font-family:inherit;resize:none;height:38px;}
+.notes-area:focus{outline:none;border-color:#2471a3;}
+.save-btn{background:#1a1a2e;color:#fff;border:none;border-radius:5px;padding:5px 12px;font-size:.76rem;font-weight:700;cursor:pointer;}
+.save-btn:hover{background:#2c3e6b;}
+.saved-msg{font-size:.72rem;color:#1e8449;font-weight:700;opacity:0;transition:opacity .3s;}
+.saved-msg.show{opacity:1;}
+
+.empty-state{text-align:center;padding:60px;color:#aaa;}
+
+footer{text-align:center;padding:16px;font-size:.7rem;color:#bbb;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
+<div class="hdr">
+  <div>
     <h1>📡 RADAR — Pasco County Lead Board</h1>
-    <div class="sub">May 15 + May 29 editions &nbsp;·&nbsp; 61 leads &nbsp;·&nbsp; Last updated June 3, 2026</div>
+    <div class="sub">May 15 + May 29 editions &nbsp;·&nbsp; 61 leads &nbsp;·&nbsp; Updated June 3, 2026</div>
   </div>
-  <div class="header-right">
-    <button class="btn-sm" onclick="exportData()">💾 Export Data</button>
-    <button class="btn-sm" onclick="importData()">📂 Import Data</button>
-    <span id="save-badge" style="font-size:.72rem;color:#aac4ff;"></span>
+  <div class="hdr-btns">
+    <button class="hbtn" onclick="exportData()">💾 Export</button>
+    <button class="hbtn" onclick="importData()">📂 Import</button>
+    <span id="autosave" style="font-size:.7rem;color:#aac4ff;align-self:center;"></span>
   </div>
 </div>
 
-<div id="alert-bar"></div>
+<div id="alert-bar" style="display:none;"></div>
 
-<div class="controls">
+<div class="ctrl">
   <input type="text" id="search" placeholder="🔍  Search name, address, type…" oninput="render()">
-  <select id="filter-type" onchange="render()">
+  <select id="ft" onchange="render()">
     <option value="">All Types</option>
     <option>FORECLOSURE</option><option>PROBATE</option><option>TAX DEED</option>
     <option>NOA</option><option>MOBILE HOME</option><option>PUBLIC SALE</option><option>WATCH</option>
   </select>
-  <select id="filter-edition" onchange="render()">
+  <select id="fe" onchange="render()">
     <option value="">Both Editions</option>
     <option>May 29</option><option>May 15</option>
   </select>
-  <select id="filter-ghl" onchange="render()">
+  <select id="fg" onchange="render()">
     <option value="">All GHL Status</option>
     <option>Not Sent</option><option>Sent to GHL</option><option>In Pipeline</option>
     <option>Contacted</option><option>Closed</option><option>Dead Lead</option>
   </select>
   <select id="sort" onchange="render()">
-    <option value="deadline">Sort: Deadline (soonest)</option>
-    <option value="score">Sort: Score (highest)</option>
+    <option value="deadline">Deadline (soonest first)</option>
+    <option value="score">Score (highest first)</option>
   </select>
-  <label style="font-size:.78rem;display:flex;align-items:center;gap:5px;">
-    <input type="checkbox" id="hide-past" onchange="render()"> Hide passed
+  <label style="font-size:.75rem;display:flex;align-items:center;gap:4px;cursor:pointer;">
+    <input type="checkbox" id="hp" onchange="render()"> Hide passed
   </label>
-  <span class="count-badge" id="count-badge">61 leads</span>
+  <span class="cbadge" id="cbadge">61 leads</span>
 </div>
 
-<div class="grid" id="grid"></div>
-<footer>Pasco County Legal Notices · rehabtampabay.com · Data persists in your browser · Use Export/Import to share with VA</footer>
+<div class="tbl" id="tbl"></div>
+<footer>Pasco County Legal Notices · rehabtampabay.com · Data saves in your browser · Export/Import to sync with VA</footer>
 
 <script>
 const TODAY = new Date('2026-06-03');
+const PDF_MAY29 = 'https://dgfc4k3gho5kh.cloudfront.net/97/11576497.pdf';
+const PDF_MAY15 = ''; // add when available
 
 const LEADS = [
-  {id:"l01",score:97,type:"FORECLOSURE",name:"Estate of Alice M. Vail",addr:"3808 Staysail Lane Unit 3808, Holiday FL 34691",deadline:"2026-06-29",lender:"GITSIT Solutions",atty:"Atty Damian Waldman (727) 538-4160 · service@dwaldmanlaw.com",edition:"May 29"},
-  {id:"l02",score:95,type:"TAX DEED",name:"John Ralph Hurd",addr:"Tampa Downs Ranchettes N1/2 Sec 13 Lot 12",deadline:"2026-06-18",lender:"Tax Cert #1703568",atty:"8 yrs delinquent from 2018",edition:"May 29"},
-  {id:"l03",score:94,type:"TAX DEED",name:"Eudice G. Lorge Living Trust (3 lots)",addr:"Tampa Downs Ranchettes Lots 11–13 S1/2 Sec 16",deadline:"2026-06-18",lender:"Alberto Sobrado (cert holder)",atty:"Certs 1803568/1803569/1803570 from 2019",edition:"May 29"},
-  {id:"l04",score:93,type:"PROBATE",name:"Estate of Ines Vallarino",addr:"4421 Pine Ave area, New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Luisa Vallarino Tiapon — Galt CA 95632 🌎 · Atty Christina Kane (352) 515-0101",edition:"May 29"},
-  {id:"l05",score:92,type:"PROBATE",name:"Estate of Vaughn Shafer",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Cheryl Robertson — Duncansville PA 16635 🌎 · Atty Donald Peyton (727) 848-5997",edition:"May 29"},
-  {id:"l06",score:92,type:"PROBATE",name:"Estate of Thomas Fleming Hill",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Bethany J. Wilcox — South Bend IN 46637 🌎 · Atty R. Nadine David (352) 354-2654",edition:"May 29"},
-  {id:"l07",score:91,type:"PROBATE",name:"Estate of Jann B. Jackson",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Enaé H. Boone — Bridgeport CT 06606 🌎 · Atty Wayne Coulter (727) 848-3404",edition:"May 29"},
-  {id:"l08",score:91,type:"PROBATE",name:"Estate of Arlene Alice Cochran",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Michael Lynn Cochran — Whitmore Lake MI 48189 🌎 · Atty Tanya Bell (727) 287-6316",edition:"May 29"},
-  {id:"l09",score:91,type:"PROBATE",name:"Estate of Francis N. Catini",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"PR: Marietta A. Kavanagh — Glenolden PA 19036 🌎 · Atty Kevin Hernandez (727) 712-1710",edition:"May 29"},
-  {id:"l10",score:91,type:"FORECLOSURE",name:"Jonathan Price — Nationstar / Verandahs",addr:"12148 Luftborrow Lane, Hudson FL 34669",deadline:"2026-06-04",lender:"Nationstar Mortgage LLC",atty:"Case 2025CA002977 · Diaz Anselmo",edition:"May 15"},
-  {id:"l11",score:90,type:"PROBATE",name:"Estate of Eugene Arthur Harris",addr:"Holiday FL 34690",deadline:"2026-08-29",lender:"",atty:"PR: James Mark Harris — Scottsville VA 🌎 · Atty Roberta Creighton (863) 682-1178",edition:"May 29"},
-  {id:"l12",score:88,type:"PROBATE",name:"Estate of Ronald Boschert",addr:"Holiday FL 34691",deadline:"2026-08-29",lender:"",atty:"$51,377 estate · PR: Ronald Scott Boschert — Carlisle OH 45005 🌎 · Atty David Hook · courtservice@elderlawcenter.com",edition:"May 29"},
-  {id:"l13",score:88,type:"FORECLOSURE",name:"Jay N. Hunt / Linda Mistler — US Bank Trust",addr:"10835 Stamford Dr, Port Richey FL 34668",deadline:"2026-06-08",lender:"US Bank Trust",atty:"Case 2016CA000761 · Robertson Anschutz",edition:"May 29"},
-  {id:"l14",score:88,type:"FORECLOSURE",name:"Paul Chancey — NewRez/Shellpoint",addr:"Hudson Beach Estates Unit 3, Hudson FL",deadline:"2026-06-08",lender:"NewRez/Shellpoint",atty:"Sara Collins (407) 674-1673",edition:"May 29"},
-  {id:"l15",score:88,type:"FORECLOSURE",name:"Brittany Wilson — Essex Mortgage",addr:"Lake Geneva Homesites, Hudson FL",deadline:"2026-06-09",lender:"Essex Mortgage",atty:"Case 2025CA002236 · Nicholas Foskey also named",edition:"May 15"},
-  {id:"l16",score:87,type:"NOA",name:"Estate of John A. Calus — Unknown Heirs",addr:"7503 Woodbox Row, Hudson FL 34667",deadline:"2026-06-29",lender:"Lakeview Loan",atty:"De Cubas & Lewis",edition:"May 29"},
-  {id:"l17",score:87,type:"FORECLOSURE",name:"Estate of Ann Florence Prizzi — HUD Reverse",addr:"13652 Pimberton Dr, Hudson FL 34669",deadline:"2026-06-30",lender:"HUD Reverse Mortgage",atty:"Heirs: Barbara Ann Danks, Janet Simpson · Atty Derek Harvey (216) 360-7200",edition:"May 29"},
-  {id:"l18",score:87,type:"FORECLOSURE",name:"Tracy Pignataro — Selene Finance + HUD",addr:"8311 Shallow Creek Ct, New Port Richey FL 34653",deadline:"2026-06-11",lender:"Selene Finance LP / US Bank Trust",atty:"Case 2025CA003594 · Peter E. Lanning Bar 562221",edition:"May 15"},
-  {id:"l19",score:86,type:"FORECLOSURE",name:"Estate of Janet Hartman — Carrington",addr:"37643 Landis Ave, Zephyrhills FL 33541 (mobile+land)",deadline:"2026-07-13",lender:"Carrington Mortgage",atty:"Heirs: Christopher Hartman, Dawn Robillard · McCabe Weisberg (561) 713-1400",edition:"May 29"},
-  {id:"l20",score:86,type:"FORECLOSURE",name:"Daniel Deorazio — Essex Mortgage / HUD",addr:"2434 Big Pine Dr, Holiday FL 34691",deadline:"2026-06-11",lender:"Data Mortgage dba Essex / HUD",atty:"Case 2025CA001112 · 2024 LIOH Mobile Home included · Key Vista HOA also named",edition:"May 15"},
-  {id:"l21",score:85,type:"FORECLOSURE",name:"Shelley A. Ziegler — Nationstar",addr:"Park Lake Estates, Pasco County",deadline:"2026-06-10",lender:"Nationstar Mortgage",atty:"Diaz Anselmo (954) 564-0071",edition:"May 29"},
-  {id:"l22",score:85,type:"FORECLOSURE",name:"Nicholas & Shannon Hamer — Wintrust",addr:"4743 Drift Tide Dr, New Port Richey FL 34652",deadline:"2026-06-10",lender:"Wintrust Mortgage",atty:"Robertson Anschutz",edition:"May 29"},
-  {id:"l23",score:85,type:"NOA",name:"Husam Al Tameemi & Ayat Al Ogaili",addr:"9850 Trumpet Vine Loop, Trinity FL 34655",deadline:"2026-06-15",lender:"",atty:"Case · Parcel 36-26-16-0090-00300-0070 · Adam C. Gurley FL Bar 0112519",edition:"May 15"},
-  {id:"l24",score:84,type:"FORECLOSURE",name:"Richard & Nancy Dixon — Trinity Life Insurance",addr:"34303 Sahalee Loop, Dade City FL 33525 (Lake Jovita)",deadline:"2026-06-15",lender:"Trinity Life Insurance",atty:"Ghidotti Berger",edition:"May 29"},
-  {id:"l25",score:84,type:"NOA",name:"Estate of Dianne Reza + mobile home — MidFirst",addr:"2136 Saunders Rd, Zephyrhills FL 33540",deadline:"2026-06-22",lender:"MidFirst Bank",atty:"Unknown heirs · Albertelli Law",edition:"May 29"},
-  {id:"l26",score:84,type:"NOA",name:"Estate of Betty Wade (Deceased) + mobile home",addr:"Hudson FL — Palm Cove Phase 2, Lot 66 Block 5",deadline:"2026-06-15",lender:"21st Mortgage Corporation",atty:"Case 2026CA000911",edition:"May 15"},
-  {id:"l27",score:84,type:"NOA",name:"NewRez / Shellpoint vs David Cuddy",addr:"3544 Atlantis Dr, Holiday FL 34691",deadline:"2026-06-08",lender:"NewRez LLC dba Shellpoint",atty:"Case 2026CA000281 · Padgett Law Group, Tallahassee FL",edition:"May 15"},
-  {id:"l28",score:83,type:"NOA",name:"Estate of Phillip Fleischman",addr:"12411 Beagle Road, Hudson FL 34667",deadline:"2026-06-08",lender:"County Clerk",atty:"Jupiter Asset Recovery LLC also named · Atty Nancy McClain Alfonso",edition:"May 29"},
-  {id:"l29",score:83,type:"NOA",name:"Baaron D. Waldroupe — MidFirst Bank",addr:"Lot 19 Block C, Concord Station Phase 2, Pasco",deadline:"2026-06-15",lender:"MidFirst Bank",atty:"Case 2026CA000919 · Aldridge Pite LLP, Delray Beach FL",edition:"May 15"},
-  {id:"l30",score:83,type:"NOA",name:"Bank of America vs Bobby P. Patterson",addr:"Pasco County",deadline:"2026-06-08",lender:"Bank of America N.A.",atty:"Case 2026CA000372 · Hinshaw & Culbertson, Fort Lauderdale FL",edition:"May 15"},
-  {id:"l31",score:82,type:"FORECLOSURE",name:"Rafael Garcia / Deidania Garcia — Deutsche Bank",addr:"9329 Wellstone Dr, Land O Lakes FL 34638",deadline:"2026-06-16",lender:"Deutsche Bank Trust",atty:"De Cubas & Lewis",edition:"May 29"},
-  {id:"l32",score:82,type:"NOA",name:"Jessica Tucker — 21st Mortgage",addr:"Moon Lake, Pasco County",deadline:"2026-06-15",lender:"21st Mortgage Corporation",atty:"Case 2026CA000911 · Kathy Stevenson also named",edition:"May 15"},
-  {id:"l33",score:82,type:"FORECLOSURE",name:"Wells Fargo Bank vs Michael Borkan",addr:"Pasco County",deadline:"2026-06-15",lender:"Wells Fargo Bank N.A.",atty:"Case 2016CA000761 · Long-pending case",edition:"May 15"},
-  {id:"l34",score:81,type:"TAX DEED",name:"Elizabeth Riegler MacManus Estate",addr:"N 30 ft of N1/2 SW1/4 of SW1/4, Pasco County",deadline:"2026-06-18",lender:"Maurice Johnson (cert holder)",atty:"Cert #1703326 from 2018 · estate assessed owner",edition:"May 29"},
-  {id:"l35",score:81,type:"NOA",name:"Michele Lima a/k/a Michelle Lima",addr:"30547 Palmerston Pl, Wesley Chapel FL 33545",deadline:"2026-06-15",lender:"",atty:"Leslie S. White Esq., 420 S. Orange Ave Suite 700, Orlando FL 32802",edition:"May 15"},
-  {id:"l36",score:80,type:"TAX DEED",name:"Buffalo Bill LLC — Moon Lake lots",addr:"Moon Lake No. 10 & 12, Pasco County",deadline:"2026-06-18",lender:"Multiple cert holders from 2018",atty:"Carolyn Dillman Estate, Denton II LLC, others",edition:"May 29"},
-  {id:"l37",score:80,type:"FORECLOSURE",name:"Planet Home Lending vs Emad Tadrous",addr:"Pasco County",deadline:"2026-06-22",lender:"Planet Home Lending LLC",atty:"Case 2025CA004151",edition:"May 15"},
-  {id:"l38",score:79,type:"PUBLIC SALE",name:"Affordable Secure Storage Hudson — 8 units",addr:"8619 New York Ave, Hudson FL 34667",deadline:"2026-06-13",lender:"",atty:"(727) 862-6016",edition:"May 29"},
-  {id:"l39",score:79,type:"FORECLOSURE",name:"PennyMac Loan Services — Foreclosure",addr:"Pasco County",deadline:"2026-06-22",lender:"PennyMac Loan Services LLC",atty:"Case 2025CA003199",edition:"May 15"},
-  {id:"l40",score:78,type:"PERMIT",name:"EPG1 LLC — Glades at Two Rivers (173 acres)",addr:"Pasco/Hillsborough County",deadline:"2026-06-19",lender:"",atty:"111 S Armenia Ave Suite 201, Tampa FL 33609",edition:"May 29"},
-  {id:"l41",score:78,type:"NOA",name:"Lakeview Loan vs Unknown Heirs of Richard Coffey Sr.",addr:"9651 Silverbend Dr, Dade City FL 33525",deadline:"2026-06-29",lender:"Lakeview Loan Servicing LLC",atty:"Case 2023CA004330 · Coffey heirs: Alden Coffey III, Sherry Coffey, Lynda Young",edition:"May 15"},
-  {id:"l42",score:77,type:"NOA",name:"Guzowski Family Trust — GTE Federal CU",addr:"9445 Holnwon Ct, Hudson FL 34667",deadline:"2026-06-22",lender:"GTE Federal Credit Union",atty:"Kass Shuler (813) 229-0900",edition:"May 29"},
-  {id:"l43",score:77,type:"FORECLOSURE",name:"Freedom Mortgage vs Diana Crawford-Cline",addr:"Sims Pond Pointe Phase 10, Pasco County",deadline:"2026-06-29",lender:"Freedom Mortgage Corp",atty:"Case 2023CA003523 · Michael P. Cline also named",edition:"May 15"},
-  {id:"l44",score:77,type:"NOA",name:"NewRez/Shellpoint vs Heirs of Carmen Perez Morejon",addr:"4203 Tamargo Dr, New Port Richey FL 34652",deadline:"2026-06-29",lender:"NewRez LLC dba Shellpoint",atty:"Case 2026CA000458 · Luis Hernandez Perez + R. Marono Estate also named",edition:"May 15"},
-  {id:"l45",score:76,type:"NOA",name:"Brandon Lee Phillips — Lakeview Loan",addr:"13220 Chipout Ln, Hudson FL 34669",deadline:"2026-06-29",lender:"Lakeview Loan",atty:"Tiffany & Bosco",edition:"May 29"},
-  {id:"l46",score:76,type:"FORECLOSURE",name:"Fifth Third Bank vs Ketlyn Scolastico",addr:"Lot 113 Windermere Estates at Wiregrass Ranch Ph.1, Wesley Chapel",deadline:"2026-07-07",lender:"Fifth Third Bank National Assoc.",atty:"Case 2025CA002342 · Sea Pines Civic Association also named",edition:"May 15"},
-  {id:"l47",score:75,type:"ZONING",name:"Zephyrhills ADU/MH Ordinance 1519-26",addr:"City of Zephyrhills — affects multiple zones",deadline:"2026-06-08",lender:"",atty:"Zephyrhills City Hall (813) 780-0000",edition:"May 29"},
-  {id:"l48",score:72,type:"FORECLOSURE",name:"Village Capital vs Jesselyn Ward",addr:"2139 Orange Dr, Holiday FL 34691 (mobile+lot)",deadline:"2026-07-07",lender:"Village Capital",atty:"",edition:"May 29"},
-  {id:"l49",score:71,type:"FORECLOSURE",name:"Planet Home Lending vs Brittany Garcia",addr:"4904 Dogwood St, New Port Richey FL 34653",deadline:"2026-06-29",lender:"Planet Home Lending",atty:"",edition:"May 29"},
-  {id:"l50",score:70,type:"FORECLOSURE",name:"US Bank vs James / Doreen Kline",addr:"14702 Snapper Ln, Hudson FL 34667",deadline:"2026-07-01",lender:"US Bank",atty:"",edition:"May 29"},
-  {id:"l51",score:70,type:"PROBATE",name:"Estate of Gladys Torres — $61K",addr:"New Port Richey FL",deadline:"2026-08-29",lender:"",atty:"",edition:"May 29"},
-  {id:"l52",score:70,type:"MOBILE HOME",name:"Caribbean MHC vs Wayne / Sandra Keller",addr:"11644 Turks Dr, New Port Richey FL 34654",deadline:"2026-07-02",lender:"Caribbean MHC",atty:"",edition:"May 29"},
-  {id:"l53",score:68,type:"MOBILE HOME",name:"JoAnne Valimont — 1986 Twin Mobile Home",addr:"1210 Calvary Rd, Holiday FL",deadline:"2026-06-10",lender:"",atty:"",edition:"May 29"},
-  {id:"l54",score:68,type:"MOBILE HOME",name:"Brenda Sue Garcia — 1962 Mobile Home",addr:"35638 Lotte Ln, Zephyrhills FL 33541",deadline:"2026-06-06",lender:"",atty:"",edition:"May 29"},
-  {id:"l55",score:67,type:"FORECLOSURE",name:"LoanDepot vs Dvone George / Raynelle Williams",addr:"38689 Harlow Rose Dr, Zephyrhills FL 33540",deadline:"2026-06-24",lender:"LoanDepot",atty:"",edition:"May 29"},
-  {id:"l56",score:63,type:"CDD",name:"Vida's Way CDD — $28M bond assessment",addr:"Wesley Chapel",deadline:"2026-06-16",lender:"",atty:"",edition:"May 29"},
-  {id:"l57",score:62,type:"CDD",name:"TSR CDD Regular Meeting",addr:"2500 Heart Pine Ave, Odessa FL 33556",deadline:"2026-06-10",lender:"",atty:"",edition:"May 29"},
-  {id:"l58",score:0,type:"WATCH",name:"Event Elegance Venue (Fictitious Name)",addr:"3645 Universal Plz, New Port Richey",deadline:"",lender:"",atty:"",edition:"May 29"},
-  {id:"l59",score:0,type:"WATCH",name:"EI Home Academy — NV Ventures Group LLC",addr:"New Port Richey",deadline:"",lender:"",atty:"",edition:"May 29"},
-  {id:"l60",score:0,type:"WATCH",name:"Moonstone Genealogy — Ashley Stabler",addr:"New Port Richey",deadline:"",lender:"",atty:"",edition:"May 29"},
+  {id:'l01',score:97,type:'FORECLOSURE',name:'Estate of Alice M. Vail',deceased:'Alice M. Vail',addr:'3808 Staysail Lane Unit 3808, Holiday FL 34691',county:'Pasco',property:'Holiday Lake Villas Unit 705 Building 7',caseNum:'2016CA000761CAAXWS',deadline:'2026-06-29',plaintiff:'GITSIT Solutions LLC / GV Trust 2026-1',attyName:'Damian G. Waldman',attyPhone:'727-538-4160',attyEmail:'service@dwaldmanlaw.com',edition:'May 29',signals:['Deceased owner — estate named defendant','Trust as plaintiff — motivated to resolve','June 29 deadline — 26 days left','Holiday Lake Villas condo — known property']},
+  {id:'l02',score:95,type:'TAX DEED',name:'John Ralph Hurd',deceased:'John Ralph Hurd',addr:'Tampa Downs Ranchettes N1/2 Sec 13 Lot 12',county:'Pasco',property:'Tampa Downs Ranchettes N1/2 Sec 13 Lot 12',caseNum:'Cert #1703568',deadline:'2026-06-18',plaintiff:'Ervin Freeman (cert holder)',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['8 years delinquent — cert from 2018','Tax deed sale imminent — June 18','Vacant land parcel — easy acquisition']},
+  {id:'l03',score:94,type:'TAX DEED',name:'Eudice G. Lorge Living Trust',deceased:'',addr:'Tampa Downs Ranchettes Lots 11–13 S1/2 Sec 16',county:'Pasco',property:'Tampa Downs Ranchettes — 3 lots',caseNum:'Certs 1803568/69/70',deadline:'2026-06-18',plaintiff:'Alberto Sobrado Gutierrez (cert holder)',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['3 lots — same cert holder on all','Living trust property — trustee may want to sell','Certs from 2019 — 7 yrs delinquent']},
+  {id:'l04',score:93,type:'PROBATE',name:'Estate of Ines Vallarino',deceased:'Ines Vallarino',addr:'4421 Pine Ave area, New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Christina Kane',attyPhone:'352-515-0101',attyEmail:'ckane@lyonslawgroup.com',edition:'May 29',signals:['PR is out-of-state (Galt CA) — motivated to sell','Attorney known — easy to contact','Aug 29 deadline — 87 days to work this lead']},
+  {id:'l05',score:92,type:'PROBATE',name:'Estate of Vaughn Shafer',deceased:'Vaughn Shafer',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Donald Peyton',attyPhone:'727-848-5997',attyEmail:'peytonlaw@yahoo.com',edition:'May 29',signals:['PR is out-of-state (Duncansville PA) — motivated to sell','87 days to work this lead']},
+  {id:'l06',score:92,type:'PROBATE',name:'Estate of Thomas Fleming Hill',deceased:'Thomas Fleming Hill',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'R. Nadine David',attyPhone:'352-354-2654',attyEmail:'ndavid@floridaprobatelawgroup.com',edition:'May 29',signals:['PR is out-of-state (South Bend IN) — motivated to sell','87 days to work this lead']},
+  {id:'l07',score:91,type:'PROBATE',name:'Estate of Jann B. Jackson',deceased:'Jann B. Jackson',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Wayne Coulter',attyPhone:'727-848-3404',attyEmail:'',edition:'May 29',signals:['PR is out-of-state (Bridgeport CT) — motivated to sell']},
+  {id:'l08',score:91,type:'PROBATE',name:'Estate of Arlene Alice Cochran',deceased:'Arlene Alice Cochran',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Tanya Bell',attyPhone:'727-287-6316',attyEmail:'TanyaBell@BellLawFirmFlorida.com',edition:'May 29',signals:['PR is out-of-state (Whitmore Lake MI) — motivated to sell']},
+  {id:'l09',score:91,type:'PROBATE',name:'Estate of Francis N. Catini',deceased:'Francis N. Catini',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Kevin Hernandez',attyPhone:'727-712-1710',attyEmail:'',edition:'May 29',signals:['PR is out-of-state (Glenolden PA) — motivated to sell']},
+  {id:'l10',score:91,type:'FORECLOSURE',name:'Jonathan Price — Nationstar',deceased:'',addr:'12148 Luftborrow Lane, Hudson FL 34669',county:'Pasco',property:'Lot 36, Verandahs Subdivision',caseNum:'2025CA002977CAAXWS',deadline:'2026-06-04',plaintiff:'Nationstar Mortgage LLC',attyName:'Diaz Anselmo',attyPhone:'',attyEmail:'',edition:'May 15',signals:['TOMORROW — sale June 4','Verandahs subdivision — desirable area','Nationstar foreclosure — bank motivated']},
+  {id:'l11',score:90,type:'PROBATE',name:'Estate of Eugene Arthur Harris',deceased:'Eugene Arthur Harris',addr:'Holiday FL 34690',county:'Pasco',property:'Holiday FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'Roberta Creighton',attyPhone:'863-682-1178',attyEmail:'Roberta@Putnampa.com',edition:'May 29',signals:['PR is out-of-state (Scottsville VA) — motivated to sell']},
+  {id:'l12',score:88,type:'PROBATE',name:'Estate of Ronald Boschert',deceased:'Ronald Boschert',addr:'Holiday FL 34691',county:'Pasco',property:'Holiday FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'David Hook',attyPhone:'',attyEmail:'courtservice@elderlawcenter.com',edition:'May 29',signals:['$51,377 estate — smaller but actionable','PR out-of-state (Carlisle OH)']},
+  {id:'l13',score:88,type:'FORECLOSURE',name:'Jay N. Hunt / Linda Mistler',deceased:'',addr:'10835 Stamford Dr, Port Richey FL 34668',county:'Pasco',property:'10835 Stamford Dr, Port Richey FL 34668',caseNum:'2016CA000761CAAXWS',deadline:'2026-06-08',plaintiff:'US Bank Trust',attyName:'Robertson Anschutz',attyPhone:'',attyEmail:'',edition:'May 29',signals:['5 days — sale June 8','US Bank Trust — institutional seller','Port Richey SFR']},
+  {id:'l14',score:88,type:'FORECLOSURE',name:'Paul Chancey — NewRez/Shellpoint',deceased:'',addr:'Hudson Beach Estates Unit 3, Hudson FL',county:'Pasco',property:'Hudson Beach Estates Unit 3',caseNum:'',deadline:'2026-06-08',plaintiff:'NewRez/Shellpoint',attyName:'Sara Collins',attyPhone:'407-674-1673',attyEmail:'',edition:'May 29',signals:['5 days — sale June 8','Hudson Beach — coastal area','NewRez motivated to resolve']},
+  {id:'l15',score:88,type:'FORECLOSURE',name:'Brittany Wilson — Essex Mortgage',deceased:'',addr:'Lake Geneva Homesites, Hudson FL',county:'Pasco',property:'Lake Geneva Homesites, Hudson FL',caseNum:'2025CA002236CAAXWS',deadline:'2026-06-09',plaintiff:'Essex Mortgage',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['6 days — sale June 9','Lake Geneva area — lakefront potential','Nicholas Foskey also named']},
+  {id:'l16',score:87,type:'NOA',name:'Estate of John A. Calus',deceased:'John A. Calus',addr:'7503 Woodbox Row, Hudson FL 34667',county:'Pasco',property:'7503 Woodbox Row, Hudson FL 34667',caseNum:'',deadline:'2026-06-29',plaintiff:'Lakeview Loan',attyName:'De Cubas & Lewis',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Unknown heirs — estate named','Lakeview Loan — motivated lender','26 days to respond']},
+  {id:'l17',score:87,type:'FORECLOSURE',name:'Estate of Ann Florence Prizzi',deceased:'Ann Florence Prizzi',addr:'13652 Pimberton Dr, Hudson FL 34669',county:'Pasco',property:'13652 Pimberton Dr, Hudson FL 34669',caseNum:'',deadline:'2026-06-30',plaintiff:'HUD Reverse Mortgage',attyName:'Derek Harvey',attyPhone:'216-360-7200',attyEmail:'',edition:'May 29',signals:['HUD reverse mortgage — estate on hook','Heirs: Barbara Ann Danks, Janet Simpson','27 days — contact heirs now']},
+  {id:'l18',score:87,type:'FORECLOSURE',name:'Tracy Pignataro — Selene Finance + HUD',deceased:'',addr:'8311 Shallow Creek Ct, New Port Richey FL 34653',county:'Pasco',property:'8311 Shallow Creek Ct (a/k/a #C), New Port Richey',caseNum:'2025CA003594CAAXWS',deadline:'2026-06-11',plaintiff:'Selene Finance LP / US Bank Trust',attyName:'Peter E. Lanning',attyPhone:'',attyEmail:'',edition:'May 15',signals:['8 days — sale June 11','HUD reverse mortgage involved','Selene Finance — motivated servicer']},
+  {id:'l19',score:86,type:'FORECLOSURE',name:'Estate of Janet Hartman — Carrington',deceased:'Janet Hartman',addr:'37643 Landis Ave, Zephyrhills FL 33541',county:'Pasco',property:'37643 Landis Ave, Zephyrhills FL 33541 (mobile+land)',caseNum:'',deadline:'2026-07-13',plaintiff:'Carrington Mortgage',attyName:'McCabe Weisberg',attyPhone:'561-713-1400',attyEmail:'',edition:'May 29',signals:['Estate — heirs Christopher Hartman & Dawn Robillard','Mobile home + land — unique opportunity','40 days']},
+  {id:'l20',score:86,type:'FORECLOSURE',name:'Daniel Deorazio — Essex Mortgage / HUD',deceased:'',addr:'2434 Big Pine Dr, Holiday FL 34691',county:'Pasco',property:'2434 Big Pine Dr, Holiday FL 34691',caseNum:'2025CA001112CAAXWS',deadline:'2026-06-11',plaintiff:'Data Mortgage dba Essex / HUD',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['8 days — sale June 11','HUD involved — 2024 mobile home included','Key Vista HOA also named']},
+  {id:'l21',score:85,type:'FORECLOSURE',name:'Shelley A. Ziegler — Nationstar',deceased:'',addr:'Park Lake Estates, Pasco County',county:'Pasco',property:'Park Lake Estates',caseNum:'',deadline:'2026-06-10',plaintiff:'Nationstar Mortgage',attyName:'Diaz Anselmo',attyPhone:'954-564-0071',attyEmail:'',edition:'May 29',signals:['7 days — sale June 10','Nationstar — institutional motivated seller']},
+  {id:'l22',score:85,type:'FORECLOSURE',name:'Nicholas & Shannon Hamer — Wintrust',deceased:'',addr:'4743 Drift Tide Dr, New Port Richey FL 34652',county:'Pasco',property:'4743 Drift Tide Dr, New Port Richey FL 34652',caseNum:'',deadline:'2026-06-10',plaintiff:'Wintrust Mortgage',attyName:'Robertson Anschutz',attyPhone:'',attyEmail:'',edition:'May 29',signals:['7 days — sale June 10','New Port Richey SFR — desirable area']},
+  {id:'l23',score:85,type:'NOA',name:'Husam Al Tameemi & Ayat Al Ogaili',deceased:'',addr:'9850 Trumpet Vine Loop, Trinity FL 34655',county:'Pasco',property:'9850 Trumpet Vine Loop, Trinity FL 34655',caseNum:'Parcel 36-26-16-0090-00300-0070',deadline:'2026-06-15',plaintiff:'',attyName:'Adam C. Gurley',attyPhone:'',attyEmail:'',edition:'May 15',signals:['12 days — Trinity subdivision','Trinity — premium Pasco market','Both owners named — respond quickly']},
+  {id:'l24',score:84,type:'FORECLOSURE',name:'Richard & Nancy Dixon — Trinity Life Ins',deceased:'',addr:'34303 Sahalee Loop, Dade City FL 33525',county:'Pasco',property:'34303 Sahalee Loop — Lake Jovita Golf & Country Club',caseNum:'2025CA002576CAAXES',deadline:'2026-06-15',plaintiff:'Trinity Life Insurance',attyName:'Ghidotti Berger',attyPhone:'',attyEmail:'fcpleadings@ghidottiberger.com',edition:'May 29',signals:['12 days — Lake Jovita Golf & CC','Premium golf community — high value property','Insurance company as plaintiff — motivated']},
+  {id:'l25',score:84,type:'NOA',name:'Estate of Dianne Reza + mobile home',deceased:'Dianne Reza',addr:'2136 Saunders Rd, Zephyrhills FL 33540',county:'Pasco',property:'2136 Saunders Rd, Zephyrhills FL 33540 + mobile home',caseNum:'',deadline:'2026-06-22',plaintiff:'MidFirst Bank',attyName:'Albertelli Law',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Unknown heirs — estate named','Mobile home included — package deal','19 days to respond']},
+  {id:'l26',score:84,type:'NOA',name:'Estate of Betty Wade (Deceased)',deceased:'Betty W. Wade',addr:'Hudson FL — Palm Cove Phase 2, Lot 66 Block 5',county:'Pasco',property:'Palm Cove Phase 2, Lot 66 Block 5, Hudson FL',caseNum:'2026CA000911CAAXWS',deadline:'2026-06-15',plaintiff:'21st Mortgage Corporation',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['12 days — mobile home included','21st Mortgage — manufactured housing lender','Unknown heirs — estate named defendant']},
+  {id:'l27',score:84,type:'NOA',name:'NewRez / Shellpoint vs David Cuddy',deceased:'',addr:'3544 Atlantis Dr, Holiday FL 34691',county:'Pasco',property:'3544 Atlantis Dr, Holiday FL 34691',caseNum:'2026CA000281CAAXWS',deadline:'2026-06-08',plaintiff:'NewRez LLC dba Shellpoint',attyName:'Padgett Law Group',attyPhone:'',attyEmail:'',edition:'May 15',signals:['5 days — deadline June 8','Holiday SFR — solid rental area','Shellpoint — active foreclosure servicer']},
+  {id:'l28',score:83,type:'NOA',name:'Estate of Phillip Fleischman',deceased:'Phillip Fleischman',addr:'12411 Beagle Road, Hudson FL 34667',county:'Pasco',property:'12411 Beagle Road, Hudson FL 34667',caseNum:'',deadline:'2026-06-08',plaintiff:'County Clerk / Jupiter Asset Recovery',attyName:'Nancy McClain Alfonso',attyPhone:'',attyEmail:'',edition:'May 29',signals:['5 days — deadline June 8','Jupiter Asset Recovery also circling','Competitor firms already active on this one']},
+  {id:'l29',score:83,type:'NOA',name:'Baaron D. Waldroupe — MidFirst Bank',deceased:'',addr:'Lot 19 Block C, Concord Station Phase 2, Pasco',county:'Pasco',property:'Lot 19 Block C, Concord Station Phase 2',caseNum:'2026CA000919CAAXES',deadline:'2026-06-15',plaintiff:'MidFirst Bank',attyName:'Aldridge Pite LLP',attyPhone:'',attyEmail:'',edition:'May 15',signals:['12 days — Concord Station subdivision','MidFirst Bank — motivated lender','Subdivision property — established community']},
+  {id:'l30',score:83,type:'NOA',name:'Bank of America vs Bobby P. Patterson',deceased:'',addr:'Pasco County',county:'Pasco',property:'Pasco County',caseNum:'2026CA000372CAAXWS',deadline:'2026-06-08',plaintiff:'Bank of America N.A.',attyName:'Hinshaw & Culbertson',attyPhone:'',attyEmail:'',edition:'May 15',signals:['5 days — deadline June 8','Bank of America — large institutional lender','Respond immediately']},
+  {id:'l31',score:82,type:'FORECLOSURE',name:'Rafael Garcia / Deidania Garcia',deceased:'',addr:'9329 Wellstone Dr, Land O Lakes FL 34638',county:'Pasco',property:'9329 Wellstone Dr, Land O Lakes FL 34638',caseNum:'',deadline:'2026-06-16',plaintiff:'Deutsche Bank Trust',attyName:'De Cubas & Lewis',attyPhone:'',attyEmail:'',edition:'May 29',signals:['13 days — Land O Lakes SFR','Deutsche Bank — institutional seller','Land O Lakes — premium Pasco submarket']},
+  {id:'l32',score:82,type:'NOA',name:'Jessica Tucker — 21st Mortgage',deceased:'',addr:'Moon Lake, Pasco County',county:'Pasco',property:'Moon Lake, Pasco County',caseNum:'2026CA000911CAAXWS',deadline:'2026-06-15',plaintiff:'21st Mortgage Corporation',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['12 days — Moon Lake area','21st Mortgage — manufactured housing','Kathy Stevenson also named']},
+  {id:'l33',score:82,type:'FORECLOSURE',name:'Wells Fargo Bank vs Michael Borkan',deceased:'',addr:'Pasco County',county:'Pasco',property:'Pasco County',caseNum:'2016CA000761CAAXWS',deadline:'2026-06-15',plaintiff:'Wells Fargo Bank N.A.',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['Long-pending case — 2016 filing','Wells Fargo — motivated to close','12 days remaining']},
+  {id:'l34',score:81,type:'TAX DEED',name:'Elizabeth Riegler MacManus Estate',deceased:'Elizabeth Riegler MacManus',addr:'N 30 ft of N1/2 SW1/4 of SW1/4, Pasco County',county:'Pasco',property:'N 30 ft of N1/2 SW1/4 of SW1/4, Pasco County',caseNum:'Cert #1703326',deadline:'2026-06-18',plaintiff:'Maurice Johnson (cert holder)',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Estate assessed as owner','Cert from 2018 — 8 yrs delinquent','15 days to tax deed sale']},
+  {id:'l35',score:81,type:'NOA',name:'Michele Lima a/k/a Michelle Lima',deceased:'',addr:'30547 Palmerston Pl, Wesley Chapel FL 33545',county:'Pasco',property:'30547 Palmerston Pl, Wesley Chapel FL 33545',caseNum:'',deadline:'2026-06-15',plaintiff:'',attyName:'Leslie S. White Esq.',attyPhone:'',attyEmail:'',edition:'May 15',signals:['12 days — Wesley Chapel','Wesley Chapel — rapidly appreciating area']},
+  {id:'l36',score:80,type:'TAX DEED',name:'Buffalo Bill LLC — Moon Lake lots',deceased:'',addr:'Moon Lake No. 10 & 12, Pasco County',county:'Pasco',property:'Moon Lake No. 10 & 12, Pasco County',caseNum:'Multiple certs from 2018',deadline:'2026-06-18',plaintiff:'Multiple cert holders',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Multiple lots — package opportunity','8 yrs delinquent — motivated to sell','15 days to tax deed sale']},
+  {id:'l37',score:80,type:'FORECLOSURE',name:'Planet Home Lending vs Emad Tadrous',deceased:'',addr:'Pasco County',county:'Pasco',property:'Pasco County',caseNum:'2025CA004151CAAXWS',deadline:'2026-06-22',plaintiff:'Planet Home Lending LLC',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['19 days — Planet Home Lending','Active servicer — motivated to resolve']},
+  {id:'l38',score:79,type:'PUBLIC SALE',name:'Affordable Secure Storage Hudson',deceased:'',addr:'8619 New York Ave, Hudson FL 34667',county:'Pasco',property:'8619 New York Ave, Hudson FL 34667',caseNum:'',deadline:'2026-06-13',plaintiff:'',attyName:'',attyPhone:'727-862-6016',attyEmail:'',edition:'May 29',signals:['10 days — storage unit auction','8 units — cash sale','Call direct: (727) 862-6016']},
+  {id:'l39',score:79,type:'FORECLOSURE',name:'PennyMac Loan Services — Foreclosure',deceased:'',addr:'Pasco County',county:'Pasco',property:'Pasco County',caseNum:'2025CA003199CAAXES',deadline:'2026-06-22',plaintiff:'PennyMac Loan Services LLC',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['19 days — PennyMac servicer','Large national servicer — motivated to resolve']},
+  {id:'l40',score:78,type:'OTHER',name:'EPG1 LLC — Glades at Two Rivers',deceased:'',addr:'Pasco/Hillsborough County',county:'Pasco',property:'Glades at Two Rivers — 173.40 acres',caseNum:'',deadline:'2026-06-19',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['173 acres — large development parcel','Active builder — acquisition opportunity','16 days to permit deadline']},
+  {id:'l41',score:78,type:'NOA',name:'Lakeview Loan vs Unknown Heirs of Richard Coffey Sr.',deceased:'Richard Coffey Sr.',addr:'9651 Silverbend Dr, Dade City FL 33525',county:'Pasco',property:'9651 Silverbend Dr, Dade City FL 33525',caseNum:'2023CA004330CAAXES',deadline:'2026-06-29',plaintiff:'Lakeview Loan Servicing LLC',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['Heirs: Alden Coffey III, Sherry Coffey, Lynda Young','VeraBank also named','26 days to respond']},
+  {id:'l42',score:77,type:'NOA',name:'Guzowski Family Trust — GTE Federal CU',deceased:'',addr:'9445 Holnwon Ct, Hudson FL 34667',county:'Pasco',property:'9445 Holnwon Ct, Hudson FL 34667',caseNum:'',deadline:'2026-06-22',plaintiff:'GTE Federal Credit Union',attyName:'Kass Shuler',attyPhone:'813-229-0900',attyEmail:'',edition:'May 29',signals:['Trust property — trustees may want to resolve','19 days to respond','GTE Federal CU — local lender']},
+  {id:'l43',score:77,type:'FORECLOSURE',name:'Freedom Mortgage vs Diana Crawford-Cline',deceased:'',addr:'Sims Pond Pointe Phase 10, Pasco County',county:'Pasco',property:'Sims Pond Pointe Phase 10, Pasco County',caseNum:'2023CA003523CAAXES',deadline:'2026-06-29',plaintiff:'Freedom Mortgage Corp',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['Michael P. Cline also named','26 days remaining','Freedom Mortgage — national servicer']},
+  {id:'l44',score:77,type:'NOA',name:'NewRez/Shellpoint vs Heirs of Carmen Perez Morejon',deceased:'Carmen Rosa Perez Morejon',addr:'4203 Tamargo Dr, New Port Richey FL 34652',county:'Pasco',property:'4203 Tamargo Dr, New Port Richey FL 34652',caseNum:'2026CA000458CAAXWS',deadline:'2026-06-29',plaintiff:'NewRez LLC dba Shellpoint',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['Deceased owner — estate on hook','Luis Hernandez Perez named as heir','26 days to respond']},
+  {id:'l45',score:76,type:'NOA',name:'Brandon Lee Phillips — Lakeview Loan',deceased:'',addr:'13220 Chipout Ln, Hudson FL 34669',county:'Pasco',property:'13220 Chipout Ln, Hudson FL 34669',caseNum:'',deadline:'2026-06-29',plaintiff:'Lakeview Loan',attyName:'Tiffany & Bosco',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Hudson SFR — solid rental market','26 days to respond']},
+  {id:'l46',score:76,type:'FORECLOSURE',name:'Fifth Third Bank vs Ketlyn Scolastico',deceased:'',addr:'Lot 113 Windermere Estates at Wiregrass Ranch Ph.1, Wesley Chapel',county:'Pasco',property:'Lot 113 Windermere Estates at Wiregrass Ranch Phase 1',caseNum:'2025CA002342CAAXWS',deadline:'2026-07-07',plaintiff:'Fifth Third Bank National Assoc.',attyName:'',attyPhone:'',attyEmail:'',edition:'May 15',signals:['Wiregrass Ranch — premium Wesley Chapel','Sea Pines Civic Association also named','34 days — plan outreach now']},
+  {id:'l47',score:75,type:'OTHER',name:'Zephyrhills ADU/MH Ordinance 1519-26',deceased:'',addr:'City of Zephyrhills',county:'Pasco',property:'City of Zephyrhills — affects multiple zones',caseNum:'Ordinance 1519-26',deadline:'2026-06-08',plaintiff:'',attyName:'',attyPhone:'813-780-0000',attyEmail:'',edition:'May 29',signals:['5 days — zoning hearing June 8','ADU/manufactured home rules changing','Monitor for client impact']},
+  {id:'l48',score:72,type:'FORECLOSURE',name:'Village Capital vs Jesselyn Ward',deceased:'',addr:'2139 Orange Dr, Holiday FL 34691',county:'Pasco',property:'2139 Orange Dr, Holiday FL 34691 (mobile+lot)',caseNum:'',deadline:'2026-07-07',plaintiff:'Village Capital',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Mobile home + lot — package deal','34 days remaining']},
+  {id:'l49',score:71,type:'FORECLOSURE',name:'Planet Home Lending vs Brittany Garcia',deceased:'',addr:'4904 Dogwood St, New Port Richey FL 34653',county:'Pasco',property:'4904 Dogwood St, New Port Richey FL 34653',caseNum:'',deadline:'2026-06-29',plaintiff:'Planet Home Lending',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['New Port Richey SFR','26 days remaining']},
+  {id:'l50',score:70,type:'FORECLOSURE',name:'US Bank vs James / Doreen Kline',deceased:'',addr:'14702 Snapper Ln, Hudson FL 34667',county:'Pasco',property:'14702 Snapper Ln, Hudson FL 34667',caseNum:'',deadline:'2026-07-01',plaintiff:'US Bank',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Hudson SFR','28 days remaining']},
+  {id:'l51',score:70,type:'PROBATE',name:'Estate of Gladys Torres — $61K',deceased:'Gladys Torres',addr:'New Port Richey FL',county:'Pasco',property:'New Port Richey FL',caseNum:'',deadline:'2026-08-29',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['$61,377 estate value','87 days to work this lead']},
+  {id:'l52',score:70,type:'MOBILE HOME',name:'Caribbean MHC vs Wayne / Sandra Keller',deceased:'',addr:'11644 Turks Dr, New Port Richey FL 34654',county:'Pasco',property:'11644 Turks Dr, New Port Richey FL 34654',caseNum:'',deadline:'2026-07-02',plaintiff:'Caribbean MHC',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Mobile home community','29 days remaining']},
+  {id:'l53',score:68,type:'MOBILE HOME',name:'JoAnne Valimont — 1986 Twin Mobile Home',deceased:'',addr:'1210 Calvary Rd, Holiday FL',county:'Pasco',property:'1210 Calvary Rd, Holiday FL — 1986 twin mobile',caseNum:'',deadline:'2026-06-10',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['7 days — cash sale','1986 mobile — land may be the play']},
+  {id:'l54',score:68,type:'MOBILE HOME',name:'Brenda Sue Garcia — 1962 Mobile Home',deceased:'',addr:'35638 Lotte Ln, Zephyrhills FL 33541',county:'Pasco',property:'35638 Lotte Ln, Zephyrhills FL 33541 — 1962 mobile',caseNum:'',deadline:'2026-06-06',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['3 days — sale June 6','1962 mobile — land value only','Act now']},
+  {id:'l55',score:67,type:'FORECLOSURE',name:'LoanDepot vs Dvone George / Raynelle Williams',deceased:'',addr:'38689 Harlow Rose Dr, Zephyrhills FL 33540',county:'Pasco',property:'38689 Harlow Rose Dr, Zephyrhills FL 33540',caseNum:'',deadline:'2026-06-24',plaintiff:'LoanDepot',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['Zephyrhills SFR','21 days remaining']},
+  {id:'l56',score:63,type:'OTHER',name:"Vida's Way CDD — $28M bond assessment",deceased:'',addr:'Wesley Chapel',county:'Pasco',property:'Wesley Chapel',caseNum:'',deadline:'2026-06-16',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['$28M bond — affects area properties','Monitor for client impact']},
+  {id:'l57',score:62,type:'OTHER',name:'TSR CDD Regular Meeting',deceased:'',addr:'2500 Heart Pine Ave, Odessa FL 33556',county:'Pasco',property:'2500 Heart Pine Ave, Odessa FL 33556',caseNum:'',deadline:'2026-06-10',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['CDD meeting — informational','Monitor agenda for opportunities']},
+  {id:'l58',score:0,type:'WATCH',name:'Event Elegance Venue (Fictitious Name)',deceased:'',addr:'3645 Universal Plz, New Port Richey',county:'Pasco',property:'3645 Universal Plz, New Port Richey',caseNum:'',deadline:'',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['New business registration','Monitor for real estate connection']},
+  {id:'l59',score:0,type:'WATCH',name:'EI Home Academy — NV Ventures Group LLC',deceased:'',addr:'New Port Richey',county:'Pasco',property:'New Port Richey',caseNum:'',deadline:'',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['New business registration']},
+  {id:'l60',score:0,type:'WATCH',name:'Moonstone Genealogy — Ashley Stabler',deceased:'',addr:'New Port Richey',county:'Pasco',property:'New Port Richey',caseNum:'',deadline:'',plaintiff:'',attyName:'',attyPhone:'',attyEmail:'',edition:'May 29',signals:['New business registration']},
 ];
 
-// ── STATE (persisted in localStorage) ──
-const STORE_KEY = "radar_pasco_v2";
-function loadState() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
-}
-function saveState(state) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(state));
-  document.getElementById('save-badge').textContent = '✓ Saved';
-  setTimeout(()=>document.getElementById('save-badge').textContent='', 2000);
-}
+const STORE = 'radar_v3';
+let STATE = (() => { try { return JSON.parse(localStorage.getItem(STORE))||{}; } catch { return {}; } })();
+function ls(id){ return STATE[id]||{decFirst:'',decLast:'',prFirst:'',prLast:'',prPhone:'',prEmail:'',prAddr:'',prNotes:'',ghl:'Not Sent',notes:'',pdf:''}; }
+function ss(id,k,v){ if(!STATE[id]) STATE[id]=ls(id); STATE[id][k]=v; localStorage.setItem(STORE,JSON.stringify(STATE)); }
+function flash(){ const el=document.getElementById('autosave'); el.textContent='✓ Saved'; setTimeout(()=>el.textContent='',1800); }
 
-let STATE = loadState();
+function days(ds){ if(!ds) return null; return Math.round((new Date(ds+'T00:00:00')-TODAY)/86400000); }
+function dlText(ds){ if(!ds) return {txt:'—',cls:''}; const d=days(ds); const [,m,day]=ds.split('-'); const mo=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m]; const base=`${mo} ${+day}`; if(d<0) return {txt:`${base}`,cls:'dl-passed'}; if(d===0) return {txt:`${base} — TODAY`,cls:'dl-urgent'}; if(d===1) return {txt:`${base} — TOMORROW`,cls:'dl-urgent'}; return {txt:`${base}`,cls:d<=5?'dl-urgent':d<=14?'dl-hot':'dl-ok',days:`${d}d left`}; }
+function tier(score,ds){ const d=days(ds); if(d!==null&&d<0) return 'passed'; if(d!==null&&d<=3&&score>0) return 'urgent'; if(score>=85||(d!==null&&d<=10)) return 'hot'; if(score>=60) return 'warm'; return 'watch'; }
+function typeCls(t){ const m={'FORECLOSURE':'tFORECLOSURE','PROBATE':'tPROBATE','TAX DEED':'tTAX-DEED','NOA':'tNOA','MOBILE HOME':'tMOBILE-HOME','PUBLIC SALE':'tPUBLIC-SALE','WATCH':'tWATCH'}; return m[t]||'tOTHER'; }
+function scCls(t){ return {urgent:'sc-urgent',hot:'sc-hot',warm:'sc-warm',watch:'sc-watch',passed:'sc-watch'}[t]; }
+function ghlCls(v){ return {['Not Sent']:'gns',['Sent to GHL']:'gsent',['In Pipeline']:'gpip',['Contacted']:'gcont',['Closed']:'gclosed',['Dead Lead']:'gdead'}[v]||'gns'; }
+function tpsUrl(name){ const c=name.replace(/^Estate of /i,'').replace(/ — .*/,'').replace(/ \/.*/,'').replace(/\s*\(.*/,'').trim(); return 'https://www.truepeoplesearch.com/results?name='+encodeURIComponent(c); }
+function paUrl(name){ const c=name.replace(/^Estate of /i,'').replace(/ — .*/,'').replace(/ \/.*/,'').replace(/\s*\(.*/,'').trim(); const p=c.split(' '); return `https://www.pascopa.com/Search/Owner?lastName=${encodeURIComponent(p[p.length-1]||'')}&firstName=${encodeURIComponent(p[0]||'')}`; }
 
-function getLeadState(id) {
-  return STATE[id] || { prFirst:'', prLast:'', prPhone:'', prEmail:'', prAddr:'', prNotes:'', ghl:'Not Sent', pdf:'' };
-}
-function setLeadState(id, field, val) {
-  if (!STATE[id]) STATE[id] = getLeadState(id);
-  STATE[id][field] = val;
-  saveState(STATE);
-}
+let openId = null;
 
-// ── HELPERS ──
-function daysUntil(ds) {
-  if (!ds) return null;
-  const d = new Date(ds+'T00:00:00');
-  return Math.round((d - TODAY) / 86400000);
-}
-function fmtDeadline(ds) {
-  if (!ds) return '';
-  const days = daysUntil(ds);
-  const [y,m,d] = ds.split('-');
-  const mo = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m];
-  const base = `${mo} ${+d}`;
-  if (days === null) return base;
-  if (days < 0) return `${base} (passed)`;
-  if (days === 0) return `${base} — TODAY`;
-  if (days === 1) return `${base} — TOMORROW`;
-  return `${base} — ${days} days`;
-}
-function tier(score, ds) {
-  const days = daysUntil(ds);
-  if (days !== null && days < 0) return 'passed';
-  if (days !== null && days <= 3 && score > 0) return 'urgent';
-  if (score >= 85 || (days !== null && days <= 10)) return 'hot';
-  if (score >= 60) return 'warm';
-  return 'watch';
-}
-function dlClass(ds) {
-  const d = daysUntil(ds);
-  if (d === null) return '';
-  if (d < 0) return 'passed';
-  if (d <= 3) return 'crit';
-  if (d <= 10) return 'soon';
-  return 'future';
-}
-function scoreCls(s) {
-  if (!s) return 'sw';
-  if (s >= 90) return 's90';
-  if (s >= 80) return 's80';
-  if (s >= 70) return 's70';
-  return 's60';
-}
-function tpsUrl(name) {
-  const clean = name.replace(/^Estate of /i,'').replace(/ — .*/,'').replace(/ \/.*/,'').replace(/\s*\(.*\)/,'').trim();
-  return 'https://www.truepeoplesearch.com/results?name=' + encodeURIComponent(clean);
-}
-function paUrl(name) {
-  const clean = name.replace(/^Estate of /i,'').replace(/ — .*/,'').replace(/ \/.*/,'').replace(/\s*\(.*\)/,'').trim();
-  const parts = clean.split(' ');
-  const last = parts[parts.length-1] || '';
-  const first = parts[0] || '';
-  return `https://www.pascopa.com/Search/Owner?lastName=${encodeURIComponent(last)}&firstName=${encodeURIComponent(first)}`;
-}
+function render(){
+  const srch=document.getElementById('search').value.toLowerCase();
+  const ft=document.getElementById('ft').value;
+  const fe=document.getElementById('fe').value;
+  const fg=document.getElementById('fg').value;
+  const sort=document.getElementById('sort').value;
+  const hp=document.getElementById('hp').checked;
 
-function ghlColorClass(val) {
-  const map = {'Not Sent':'ns','Sent to GHL':'sent','In Pipeline':'pip','Contacted':'cont','Closed':'closed','Dead Lead':'dead'};
-  return map[val] || 'ns';
-}
-
-// ── RENDER ──
-function render() {
-  const search = document.getElementById('search').value.toLowerCase();
-  const ft = document.getElementById('filter-type').value;
-  const fe = document.getElementById('filter-edition').value;
-  const fg = document.getElementById('filter-ghl').value;
-  const sort = document.getElementById('sort').value;
-  const hidePast = document.getElementById('hide-past').checked;
-
-  let leads = LEADS.filter(l => {
-    if (ft && l.type !== ft) return false;
-    if (fe && l.edition !== fe) return false;
-    if (hidePast && l.deadline && daysUntil(l.deadline) < 0) return false;
-    const ls = getLeadState(l.id);
-    if (fg && ls.ghl !== fg) return false;
-    if (search) {
-      const hay = [l.name, l.addr, l.type, l.atty, l.lender, l.edition].join(' ').toLowerCase();
-      if (!hay.includes(search)) return false;
-    }
+  let leads=LEADS.filter(l=>{
+    if(ft&&l.type!==ft) return false;
+    if(fe&&l.edition!==fe) return false;
+    if(hp&&l.deadline&&days(l.deadline)<0) return false;
+    if(fg&&ls(l.id).ghl!==fg) return false;
+    if(srch){ const h=[l.name,l.addr,l.type,l.attyName,l.plaintiff,l.edition,l.property,l.caseNum].join(' ').toLowerCase(); if(!h.includes(srch)) return false; }
     return true;
   });
 
-  if (sort === 'score') {
-    leads.sort((a,b) => b.score - a.score);
-  } else {
-    leads.sort((a,b) => {
-      const da = a.deadline ? new Date(a.deadline) : new Date('2099-01-01');
-      const db = b.deadline ? new Date(b.deadline) : new Date('2099-01-01');
-      return da-db || b.score-a.score;
-    });
-  }
+  leads.sort((a,b)=>{
+    if(sort==='score') return b.score-a.score;
+    const da=a.deadline?new Date(a.deadline):new Date('2099-01-01');
+    const db=b.deadline?new Date(b.deadline):new Date('2099-01-01');
+    return da-db||b.score-a.score;
+  });
 
-  // Alert bar
-  const urgent = LEADS.filter(l => { const d = daysUntil(l.deadline); return d !== null && d >= 0 && d <= 3 && l.score > 0; });
-  const ab = document.getElementById('alert-bar');
-  if (urgent.length) {
-    ab.style.display = 'flex';
-    ab.innerHTML = '⚠️  ' + urgent.map(l=>`<b>${l.name}</b> — ${fmtDeadline(l.deadline)}`).join('&nbsp;&nbsp;·&nbsp;&nbsp;');
-  } else {
-    ab.style.display = 'none';
-  }
+  // alert bar
+  const urg=LEADS.filter(l=>{const d=days(l.deadline);return d!==null&&d>=0&&d<=3&&l.score>0;});
+  const ab=document.getElementById('alert-bar');
+  if(urg.length){ab.style.display='flex';ab.innerHTML='⚠️ &nbsp;'+urg.map(l=>`<b>${l.name}</b> — ${dlText(l.deadline).txt} (${days(l.deadline)===0?'TODAY':days(l.deadline)===1?'TOMORROW':days(l.deadline)+'d'}`).join('&nbsp;·&nbsp;');}
+  else ab.style.display='none';
 
-  document.getElementById('count-badge').textContent = `${leads.length} of ${LEADS.length} leads`;
+  document.getElementById('cbadge').textContent=`${leads.length} of ${LEADS.length} leads`;
+  const tbl=document.getElementById('tbl');
+  tbl.innerHTML=leads.map(l=>buildRow(l)).join('');
 
-  const grid = document.getElementById('grid');
-  if (!leads.length) {
-    grid.innerHTML = '<div class="empty-state">No leads match your filters.</div>';
-    return;
-  }
+  // restore open row
+  if(openId) { const el=document.getElementById('d-'+openId); if(el){el.classList.add('open');const r=document.getElementById('r-'+openId);if(r){r.classList.add('open');r.querySelector('.row-arrow').classList.add('open');}}}
+}
 
-  grid.innerHTML = leads.map(l => {
-    const t = tier(l.score, l.deadline);
-    const ls = getLeadState(l.id);
-    const prHasData = ls.prFirst || ls.prLast || ls.prPhone || ls.prEmail;
-    const isProbate = l.type === 'PROBATE';
-    const ghlCls = ghlColorClass(ls.ghl);
+function buildRow(l){
+  const t=tier(l.score,l.deadline);
+  const dl=dlText(l.deadline);
+  const s=ls(l.id);
+  const isProbate=l.type==='PROBATE';
+  const pdfLink=s.pdf||(l.edition==='May 29'?PDF_MAY29:PDF_MAY15)||'';
 
-    return `<div class="card ${t}" id="card-${l.id}">
-  <div class="card-head">
-    <div class="card-top">
-      <div class="card-name">${l.name}</div>
-      ${l.score ? `<span class="score-pill ${scoreCls(l.score)}">${l.score}</span>` : ''}
-    </div>
-    <div class="card-addr">📍 ${l.addr}</div>
-    <div class="tags">
-      <span class="tag t${l.type.replace(/ /g,'\\ ')}">${l.type}</span>
-      <span class="tag t${l.edition.replace(/ /g,'')}">${l.edition}</span>
-    </div>
-    ${l.deadline ? `<div class="deadline-row">
-      <span class="deadline ${dlClass(l.deadline)}">⏰ ${fmtDeadline(l.deadline)}</span>
-    </div>` : ''}
-    ${l.atty ? `<div class="atty-info">📋 ${l.atty}</div>` : ''}
+  return `<div class="row-wrap" id="rw-${l.id}">
+<div class="row" id="r-${l.id}" onclick="toggle('${l.id}')">
+  <div class="row-bar bar-${t}"></div>
+  <div class="row-score ${scCls(t)}">${l.score||'—'}</div>
+  <div class="row-main">
+    <div class="row-name">${l.name}</div>
+    <div class="row-sub">${l.property||l.addr}</div>
   </div>
-
-  <div class="quick-links">
-    <a class="ql-btn ql-tps" href="${tpsUrl(l.name)}" target="_blank">🔍 TruePeopleSearch</a>
-    <a class="ql-btn ql-pa" href="${paUrl(l.name)}" target="_blank">🏠 Pasco PA</a>
-    ${ls.pdf
-      ? `<a class="ql-btn ql-pdf" href="${ls.pdf}" target="_blank">📄 View PDF</a>`
-      : `<span class="ql-btn ql-pdf" onclick="setPdf('${l.id}')" title="Paste PDF link">📄 Add PDF Link</span>`
-    }
+  <div class="row-type"><span class="type-pill ${typeCls(l.type)}">${l.type}</span></div>
+  <div class="row-dl">
+    <div class="dl-label ${dl.cls}">${dl.txt}</div>
+    ${dl.days?`<div class="dl-days ${dl.cls}">${dl.days}</div>`:''}
   </div>
-
-  <div class="pr-section">
-    <div class="pr-toggle ${prHasData ? 'open':''}" onclick="togglePR('${l.id}',this)">
-      ${isProbate ? '👤 Personal Representative Info' : '👤 Owner / Contact Info'}
-      ${prHasData ? ' <span style="color:#1e8449;font-size:.7rem;">✓ filled</span>' : ''}
-    </div>
-    <div class="pr-fields ${prHasData ? 'visible':''}" id="pr-${l.id}">
-      ${isProbate ? `<div class="pr-note pr-full">⚠️ PROBATE: Fill in the Personal Representative — this is who goes to GHL, NOT the deceased.</div>` : ''}
-      <div><label>${isProbate ? 'PR First Name' : 'First Name'}</label><input value="${ls.prFirst}" onchange="setLeadState('${l.id}','prFirst',this.value)" placeholder="First"></div>
-      <div><label>${isProbate ? 'PR Last Name' : 'Last Name'}</label><input value="${ls.prLast}" onchange="setLeadState('${l.id}','prLast',this.value)" placeholder="Last"></div>
-      <div><label>Phone</label><input value="${ls.prPhone}" onchange="setLeadState('${l.id}','prPhone',this.value)" placeholder="(000) 000-0000"></div>
-      <div><label>Email</label><input value="${ls.prEmail}" onchange="setLeadState('${l.id}','prEmail',this.value)" placeholder="email@example.com"></div>
-      <div class="pr-full"><label>Mailing Address</label><input value="${ls.prAddr}" onchange="setLeadState('${l.id}','prAddr',this.value)" placeholder="Street, City, State ZIP"></div>
-      <div class="pr-full"><label>Notes</label><textarea rows="2" onchange="setLeadState('${l.id}','prNotes',this.value)" placeholder="Notes for VA or Bryan...">${ls.prNotes}</textarea></div>
-    </div>
-  </div>
-
-  <div class="ghl-bar">
-    <span class="ghl-label">📤 GHL</span>
-    <select class="ghl-select ${ghlCls}" onchange="updateGHL('${l.id}',this)">
-      ${['Not Sent','Sent to GHL','In Pipeline','Contacted','Closed','Dead Lead'].map(o=>`<option ${ls.ghl===o?'selected':''}>${o}</option>`).join('')}
+  <div class="row-ghl">
+    <select class="ghl-pill ${ghlCls(s.ghl)}" onclick="event.stopPropagation()" onchange="updateGHL('${l.id}',this)">
+      ${['Not Sent','Sent to GHL','In Pipeline','Contacted','Closed','Dead Lead'].map(o=>`<option ${s.ghl===o?'selected':''}>${o}</option>`).join('')}
     </select>
   </div>
+  <div class="row-arrow">▶</div>
+</div>
+
+<div class="detail" id="d-${l.id}">
+  <div class="detail-inner">
+
+    <!-- Notice Details -->
+    <div class="dsec">
+      <div class="dsec-title"><span>📋</span> Notice Details</div>
+      <div class="drow"><span class="dlbl">Type</span><span class="dval">${l.type}</span></div>
+      <div class="drow"><span class="dlbl">County</span><span class="dval">${l.county}</span></div>
+      <div class="drow"><span class="dlbl">Property</span><span class="dval">${l.property||l.addr}</span></div>
+      ${l.caseNum?`<div class="drow"><span class="dlbl">Case #</span><span class="dval">${l.caseNum}</span></div>`:''}
+      <div class="drow"><span class="dlbl">Deadline</span><span class="dval ${dl.cls}">${dl.txt}${dl.days?' — '+dl.days:''}</span></div>
+      ${l.plaintiff?`<div class="drow"><span class="dlbl">Plaintiff</span><span class="dval">${l.plaintiff}</span></div>`:''}
+      ${l.attyName?`<div class="drow"><span class="dlbl">Attorney</span><span class="dval">${l.attyName}</span></div>`:''}
+      ${l.attyPhone?`<div class="drow"><span class="dlbl">Atty Phone</span><span class="dval"><a href="tel:${l.attyPhone}">${l.attyPhone}</a></span></div>`:''}
+      ${l.attyEmail?`<div class="drow"><span class="dlbl">Atty Email</span><span class="dval"><a href="mailto:${l.attyEmail}">${l.attyEmail}</a></span></div>`:''}
+      <div class="drow"><span class="dlbl">Edition</span><span class="dval">${l.edition}</span></div>
+    </div>
+
+    <!-- Heat Signals -->
+    <div class="dsec">
+      <div class="dsec-title"><span>🔥</span> Heat Signals</div>
+      <div class="signals">
+        ${l.signals.map((sig,i)=>`<div class="signal"><div class="sig-dot${i===0?' red':''}"></div><span>${sig}</span></div>`).join('')}
+      </div>
+    </div>
+
+    <!-- People — full width -->
+    <div class="dsec people">
+      <div class="dsec-title"><span>👤</span> People</div>
+      <div class="people-grid">
+
+        <!-- Deceased / Owner -->
+        <div class="person-box">
+          <div class="person-label deceased-label">${isProbate?'⚰️ Deceased Owner (DO NOT CONTACT)':'🏠 Property Owner / Defendant'}</div>
+          <div class="person-name">${l.deceased||l.name.replace(/ — .*/,'').replace(/^Estate of /i,'')}</div>
+          ${isProbate?'<div style="font-size:.7rem;color:#c0392b;margin-bottom:6px;">This person is deceased — contact the PR below</div>':''}
+          <div class="field-group">
+            <div class="field-row"><label class="field-label">First Name</label><input class="field-input" value="${s.decFirst}" onchange="ss('${l.id}','decFirst',this.value);flash()" placeholder="First"></div>
+            <div class="field-row"><label class="field-label">Last Name</label><input class="field-input" value="${s.decLast}" onchange="ss('${l.id}','decLast',this.value);flash()" placeholder="Last"></div>
+          </div>
+        </div>
+
+        <!-- Personal Representative / Contact -->
+        <div class="person-box pr-box">
+          <div class="person-label pr-label">${isProbate?'✅ Personal Representative (WHO TO CONTACT)':'📞 Point of Contact'}</div>
+          <div class="person-name">${isProbate?'Find via TruePeopleSearch or attorney':'Call/contact directly'}</div>
+          ${isProbate?'<div class="pr-note">→ This person goes to GHL</div>':''}
+          <div class="field-group">
+            <div class="field-row"><label class="field-label">First Name</label><input class="field-input" value="${s.prFirst}" onchange="ss('${l.id}','prFirst',this.value);flash()" placeholder="First"></div>
+            <div class="field-row"><label class="field-label">Last Name</label><input class="field-input" value="${s.prLast}" onchange="ss('${l.id}','prLast',this.value);flash()" placeholder="Last"></div>
+            <div class="field-row"><label class="field-label">Phone</label><input class="field-input" value="${s.prPhone}" onchange="ss('${l.id}','prPhone',this.value);flash()" placeholder="(000) 000-0000"></div>
+            <div class="field-row"><label class="field-label">Email</label><input class="field-input" value="${s.prEmail}" onchange="ss('${l.id}','prEmail',this.value);flash()" placeholder="email@example.com"></div>
+            <div class="field-row"><label class="field-label">Mailing Address</label><input class="field-input" value="${s.prAddr}" onchange="ss('${l.id}','prAddr',this.value);flash()" placeholder="City, State ZIP"></div>
+          </div>
+        </div>
+
+      </div>
+      <!-- Notes -->
+      <div style="margin-top:8px;">
+        <label class="field-label" style="display:block;margin-bottom:4px;">VA Notes</label>
+        <textarea class="field-input" rows="2" style="resize:vertical;" onchange="ss('${l.id}','prNotes',this.value);flash()" placeholder="Notes, follow-up actions, observations...">${s.prNotes}</textarea>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="dsec links">
+      <div class="dsec-title"><span>🔗</span> Quick Links</div>
+      <div class="links-row">
+        <a class="lbtn lbtn-tps" href="${tpsUrl(l.name)}" target="_blank">🔍 TruePeopleSearch</a>
+        <a class="lbtn lbtn-pa" href="${paUrl(l.name)}" target="_blank">🏠 Pasco PA</a>
+        ${pdfLink
+          ? `<a class="lbtn lbtn-pdf" href="${pdfLink}" target="_blank">📄 View PDF (${l.edition})</a>`
+          : `<span class="lbtn lbtn-pdf no-pdf" onclick="addPdf('${l.id}')">📄 Add PDF Link</span>`}
+      </div>
+    </div>
+
+    <!-- GHL -->
+    <div class="dsec ghl-sec">
+      <div class="dsec-title"><span>📤</span> GHL Pipeline</div>
+      <div class="ghl-full">
+        <select class="ghl-select-full" onchange="updateGHL('${l.id}',this)">
+          ${['Not Sent','Sent to GHL','In Pipeline','Contacted','Closed','Dead Lead'].map(o=>`<option ${s.ghl===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+        <textarea class="notes-area" placeholder="Pipeline notes..." onchange="ss('${l.id}','notes',this.value);flash()">${s.notes}</textarea>
+        <span class="saved-msg" id="saved-${l.id}">✓ Saved</span>
+      </div>
+    </div>
+
+  </div>
+</div>
 </div>`;
-  }).join('');
 }
 
-function togglePR(id, btn) {
-  btn.classList.toggle('open');
-  const el = document.getElementById('pr-'+id);
-  el.classList.toggle('visible');
-}
-function updateGHL(id, sel) {
-  const val = sel.value;
-  sel.className = 'ghl-select ' + ghlColorClass(val);
-  setLeadState(id, 'ghl', val);
-}
-function setPdf(id) {
-  const url = prompt('Paste the PDF link (Google Drive, Dropbox, etc.):');
-  if (url && url.startsWith('http')) {
-    setLeadState(id, 'pdf', url);
-    render();
+function toggle(id){
+  const detail=document.getElementById('d-'+id);
+  const row=document.getElementById('r-'+id);
+  const arrow=row.querySelector('.row-arrow');
+  if(openId&&openId!==id){
+    const od=document.getElementById('d-'+openId);
+    const or=document.getElementById('r-'+openId);
+    if(od) od.classList.remove('open');
+    if(or){or.classList.remove('open');or.querySelector('.row-arrow').classList.remove('open');}
   }
+  const isOpen=detail.classList.contains('open');
+  detail.classList.toggle('open',!isOpen);
+  row.classList.toggle('open',!isOpen);
+  arrow.classList.toggle('open',!isOpen);
+  openId=isOpen?null:id;
 }
 
-// ── EXPORT / IMPORT ──
-function exportData() {
-  const blob = new Blob([JSON.stringify(STATE, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'radar_data_' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
+function updateGHL(id,sel){
+  const val=sel.value;
+  ss(id,'ghl',val); flash();
+  // update both selects for this lead
+  document.querySelectorAll(`[onchange*="updateGHL('${id}"]`).forEach(s=>{s.value=val;});
+  // update row pill class
+  const pill=document.querySelector(`#r-${id} .ghl-pill`);
+  if(pill) pill.className='ghl-pill '+ghlCls(val);
+  const full=document.querySelector(`#d-${id} .ghl-select-full`);
+  if(full) full.value=val;
 }
-function importData() {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = '.json';
-  input.onchange = e => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        STATE = JSON.parse(ev.target.result);
-        saveState(STATE);
-        render();
-        alert('Data imported successfully!');
-      } catch { alert('Invalid file.'); }
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
+
+function addPdf(id){
+  const url=prompt('Paste the PDF link (Google Drive, CloudFront, etc.):');
+  if(url&&url.startsWith('http')){ ss(id,'pdf',url); flash(); render(); }
+}
+
+function exportData(){
+  const b=new Blob([JSON.stringify(STATE,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='radar_data_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function importData(){
+  const i=document.createElement('input'); i.type='file'; i.accept='.json';
+  i.onchange=e=>{const r=new FileReader();r.onload=ev=>{try{STATE=JSON.parse(ev.target.result);localStorage.setItem(STORE,JSON.stringify(STATE));render();alert('Imported!');}catch{alert('Invalid file.');}};r.readAsText(e.target.files[0]);};
+  i.click();
 }
 
 render();
