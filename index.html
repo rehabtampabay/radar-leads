@@ -29,6 +29,17 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .tb-count{margin-left:auto;font-size:.75rem;color:#6b7280;font-weight:600;white-space:nowrap;}
 .chk-label{font-size:.75rem;color:#6b7280;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;}
 
+
+/* ── TABS ── */
+.tabs{background:#fff;border-bottom:2px solid #e5e7eb;padding:0 24px;display:flex;gap:0;}
+.tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:#6b7280;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.12s;white-space:nowrap;}
+.tab:hover{color:#374151;}
+.tab.active{color:#0f172a;border-bottom-color:#0f172a;}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;background:#f3f4f6;color:#6b7280;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;}
+.tab.active .tab-badge{background:#0f172a;color:#fff;}
+.tab.surplus-tab.active{color:#7c3aed;border-bottom-color:#7c3aed;}
+.tab.surplus-tab.active .tab-badge{background:#7c3aed;}
+
 /* ── LIST ── */
 .list{padding:14px 24px;display:flex;flex-direction:column;gap:4px;}
 
@@ -79,6 +90,10 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .cl-hot{color:#ea580c;}
 .cl-ok{color:#16a34a;}
 .cl-passed{color:#d1d5db;}
+.cl-surplus{color:#7c3aed;font-weight:700;}
+.lrow.tier-surplus .lrow-head{background:#faf5ff;}
+.lrow.tier-surplus{border-left:4px solid #7c3aed !important;border-color:#ddd6fe;}
+.surplus-badge{font-size:.65rem;font-weight:700;color:#7c3aed;background:#ede9fe;border:1px solid #ddd6fe;padding:2px 7px;border-radius:10px;white-space:nowrap;}
 
 .lghl{padding:0 8px;}
 .ghl-badge{font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;cursor:pointer;border:none;display:block;width:100%;text-align:center;}
@@ -196,9 +211,6 @@ footer{text-align:center;padding:16px;font-size:.68rem;color:#d1d5db;}
     <option>FORECLOSURE</option><option>PROBATE</option><option>TAX DEED</option>
     <option>NOA</option><option>MOBILE HOME</option><option>PUBLIC SALE</option><option>WATCH</option>
   </select>
-  <select id="fe" onchange="render()">
-    <option value="">Both Editions</option><option>May 29</option><option>May 15</option>
-  </select>
   <select id="fg" onchange="render()">
     <option value="">All GHL Status</option>
     <option>Not Sent</option><option>Sent to GHL</option><option>In Pipeline</option>
@@ -209,11 +221,17 @@ footer{text-align:center;padding:16px;font-size:.68rem;color:#d1d5db;}
     <option value="score">Score ↓</option>
   </select>
   <div class="tb-sep"></div>
-  <label class="chk-label"><input type="checkbox" id="hp" onchange="render()"> Hide passed</label>
-  <label class="chk-label"><input type="checkbox" id="hr" onchange="render()"> Hide removed</label>
+  <div style="display:flex;gap:12px;align-items:center;">
+    <label class="chk-label"><input type="checkbox" id="hp" onchange="render()"> Hide dead leads</label>
+    <label class="chk-label"><input type="checkbox" id="hr" onchange="render()"> Hide removed</label>
+  </div>
   <span class="tb-count" id="tbcount">— leads</span>
 </div>
 
+<div class="tabs">
+  <div class="tab active" id="tab-active" onclick="switchTab('active')">Active Leads <span class="tab-badge" id="badge-active">—</span></div>
+  <div class="tab surplus-tab" id="tab-surplus" onclick="switchTab('surplus')">⚡ Surplus Outreach <span class="tab-badge" id="badge-surplus">—</span></div>
+</div>
 <div class="list" id="list"></div>
 <footer>Pasco County Legal Notices · rehabtampabay.com · All data saves in your browser · Export/Import to sync with VA</footer>
 
@@ -239,18 +257,24 @@ function set(id,k,v){ if(!STATE[id]) STATE[id]=ls(id); STATE[id][k]=v; save(); }
 
 function daysLeft(ds){ if(!ds) return null; return Math.round((new Date(ds+'T00:00:00')-TODAY)/86400000); }
 function fmtDate(ds){ if(!ds) return '—'; const [,m,d]=ds.split('-'); return ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m]+' '+d; }
-function dlInfo(ds){
+function dlInfo(ds, type){
   const d=daysLeft(ds);
   if(d===null) return {date:'—',days:'',cls:''};
   const date=fmtDate(ds);
-  if(d<0) return {date,days:'Passed',cls:'cl-passed'};
+  if(d<0){
+    const isSale = type&&(type==='FORECLOSURE'||type==='TAX DEED'||type==='PUBLIC SALE'||type==='MOBILE HOME');
+    return {date, days: isSale ? '⚡ Surplus?' : 'Passed', cls:'cl-passed', surplus: isSale};
+  }
   if(d===0) return {date,days:'TODAY',cls:'cl-urgent'};
   if(d===1) return {date,days:'TOMORROW',cls:'cl-urgent'};
   return {date,days:`${d}d left`,cls:d<=5?'cl-urgent':d<=14?'cl-hot':'cl-ok'};
 }
-function tier(score,ds){
+function tier(score,ds,type){
   const d=daysLeft(ds);
-  if(d!==null&&d<0) return 'passed';
+  if(d!==null&&d<0){
+    const isSale=type&&(type==='FORECLOSURE'||type==='TAX DEED'||type==='PUBLIC SALE'||type==='MOBILE HOME');
+    return isSale?'surplus':'passed';
+  }
   if(d!==null&&d<=3&&score>0) return 'urgent';
   if(score>=85||(d!==null&&d<=10)) return 'hot';
   if(score>=60) return 'warm';
@@ -265,11 +289,19 @@ function paUrl(n){ const w=n.replace(/^Estate of /i,'').replace(/ [—–].*/,''
 function clerkUrl(cn){ if(!cn||cn.startsWith('Cert')) return 'https://pascoclerk.com/public-access/'; return `https://pascoclerk.com/public-access/?caseNum=${encodeURIComponent(cn)}`; }
 
 let openId=null;
+let currentTab='active';
+
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('tab-active').classList.toggle('active', tab==='active');
+  document.getElementById('tab-surplus').classList.toggle('active', tab==='surplus');
+  openId=null;
+  render();
+}
 
 function render(){
   const srch=document.getElementById('search').value.toLowerCase();
   const ft=document.getElementById('ft').value;
-  const fe=document.getElementById('fe').value;
   const fg=document.getElementById('fg').value;
   const sort=document.getElementById('sort').value;
   const hp=document.getElementById('hp').checked;
@@ -281,8 +313,7 @@ function render(){
     if(hr&&s.removed) return false;
     if(fc&&l.county!==fc) return false;
     if(ft&&l.type!==ft) return false;
-    if(fe&&l.edition!==fe) return false;
-    if(hp&&l.deadline&&daysLeft(l.deadline)<0) return false;
+    if(hp&&l.deadline&&daysLeft(l.deadline)<0&&tier(l.score,l.deadline,l.type)!=='surplus') return false;
     if(fg&&s.ghl!==fg) return false;
     if(srch){
       const hay=[l.name,l.addr,l.type,l.attyName,l.plaintiff,l.edition,l.property,l.caseNum,l.deceased,l.cf,l.cl].join(' ').toLowerCase();
@@ -300,7 +331,19 @@ function render(){
 
   // no alert bar — urgent leads highlighted red in rows
 
-  document.getElementById('tbcount').textContent=leads.length===LEADS.length?`${LEADS.length} leads`:`${leads.length} of ${LEADS.length}`;
+  // Split into active vs surplus
+  const isSurplus = l => {
+    const d=daysLeft(l.deadline);
+    return d!==null && d<0 && (l.type==='FORECLOSURE'||l.type==='TAX DEED'||l.type==='PUBLIC SALE'||l.type==='MOBILE HOME');
+  };
+  const allActive = leads.filter(l=>!isSurplus(l));
+  const allSurplus = leads.filter(isSurplus);
+
+  document.getElementById('badge-active').textContent=allActive.length;
+  document.getElementById('badge-surplus').textContent=allSurplus.length;
+
+  leads = currentTab==='surplus' ? allSurplus : allActive;
+  document.getElementById('tbcount').textContent=`${leads.length} ${currentTab==='surplus'?'surplus':'active'} leads`;
 
   const list=document.getElementById('list');
   list.innerHTML=leads.length ? leads.map(l=>buildRow(l)).join('') : '<div class="empty">No leads match your filters.</div>';
@@ -312,8 +355,8 @@ function render(){
 }
 
 function buildRow(l){
-  const t=tier(l.score,l.deadline);
-  const dl=dlInfo(l.deadline);
+  const t=tier(l.score,l.deadline,l.type);
+  const dl=dlInfo(l.deadline, l.type);
   const s=ls(l.id);
   const isProbate=l.type==='PROBATE';
   const prFirst=s.prFirst||l.cf||'';
@@ -333,7 +376,7 @@ function buildRow(l){
   <div class="ltype"><span class="tpill ${tpCls(l.type)}">${l.type}</span></div>
   <div class="ldl">
     <div class="dl-date ${dl.cls}">${dl.date}</div>
-    <div class="dl-days ${dl.cls}">${dl.days}</div>
+    <div class="dl-days ${dl.surplus?'cl-surplus':dl.cls}">${dl.days}${dl.surplus?' <span class=\"surplus-badge\">surplus</span>':''}</div>
   </div>
   <div class="lghl">
     <select class="ghl-badge ${gCls(s.ghl)}" onclick="event.stopPropagation()" onchange="quickGHL('${l.id}',this)">
@@ -346,6 +389,10 @@ function buildRow(l){
 <div class="lpanel" id="p-${l.id}">
   <div class="lpanel-inner">
 
+    ${t==='surplus'?`<div class="pc pc-full" style="background:#faf5ff;border-color:#ddd6fe;margin-bottom:0;">
+      <div class="pc-title"><span class="pc-title-icon">⚡</span> Surplus Outreach</div>
+      <div style="font-size:.79rem;color:#5b21b6;line-height:1.6;">Auction date passed. If the property sold for more than the debt, the <b>former owner has unclaimed surplus funds</b> at the courthouse. Contact them — they likely don't know. Help them file the claim. Warm lead.</div>
+    </div>`:''}
     <!-- Notice Details -->
     <div class="pc">
       <div class="pc-title"><span class="pc-title-icon">📋</span> Notice Details</div>
