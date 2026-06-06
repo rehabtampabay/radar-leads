@@ -20,10 +20,10 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 #autosave{font-size:.7rem;color:#34d399;display:none;}
 
 /* ── TOOLBAR ── */
-.toolbar{background:#f8f9fc;border-bottom:1px solid #cdd3e0;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:52px;z-index:200;}
-.toolbar input{border:1px solid #d1d5db;border-radius:7px;padding:6px 11px;font-size:.8rem;width:210px;background:#f9fafb;outline:none;transition:.15s;}
+.toolbar{background:#f8f9fc;border-bottom:1px solid #cdd3e0;padding:6px 16px;display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow-x:auto;position:sticky;top:52px;z-index:200;}
+.toolbar input{border:1px solid #d1d5db;border-radius:7px;padding:5px 9px;font-size:.76rem;width:148px;background:#f9fafb;outline:none;transition:.15s;flex-shrink:0;}
 .toolbar input:focus{border-color:#3b82f6;background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.12);}
-.toolbar select{border:1px solid #d1d5db;border-radius:7px;padding:6px 10px;font-size:.78rem;background:#f9fafb;color:#374151;cursor:pointer;outline:none;}
+.toolbar select{border:1px solid #d1d5db;border-radius:7px;padding:4px 7px;font-size:.74rem;background:#f9fafb;color:#374151;cursor:pointer;outline:none;flex-shrink:0;}
 .toolbar select:focus{border-color:#3b82f6;}
 .tb-sep{width:1px;height:20px;background:#e5e7eb;flex-shrink:0;}
 .tb-count{margin-left:auto;font-size:.75rem;color:#6b7280;font-weight:600;white-space:nowrap;}
@@ -221,16 +221,15 @@ footer{text-align:center;padding:16px;font-size:.68rem;color:#d1d5db;}
     <option value="score">Score ↓</option>
   </select>
   <div class="tb-sep"></div>
-  <div style="display:flex;gap:12px;align-items:center;">
-    <label class="chk-label"><input type="checkbox" id="hp" onchange="render()"> Hide dead leads</label>
-    <label class="chk-label"><input type="checkbox" id="hr" onchange="render()"> Hide removed</label>
-  </div>
+  <label class="chk-label"><input type="checkbox" id="hp" onchange="render()"> Hide dead</label>
+  <label class="chk-label"><input type="checkbox" id="hr" onchange="render()"> Hide removed</label>
   <span class="tb-count" id="tbcount">— leads</span>
 </div>
 
 <div class="tabs">
   <div class="tab active" id="tab-active" onclick="switchTab('active')">Active Leads <span class="tab-badge" id="badge-active">—</span></div>
   <div class="tab surplus-tab" id="tab-surplus" onclick="switchTab('surplus')">⚡ Surplus Outreach <span class="tab-badge" id="badge-surplus">—</span></div>
+  <div class="tab" id="tab-legend" onclick="switchTab('legend')">📖 Guide</div>
 </div>
 <div class="list" id="list"></div>
 <footer>Pasco County Legal Notices · rehabtampabay.com · All data saves in your browser · Export/Import to sync with VA</footer>
@@ -295,11 +294,82 @@ function switchTab(tab){
   currentTab=tab;
   document.getElementById('tab-active').classList.toggle('active', tab==='active');
   document.getElementById('tab-surplus').classList.toggle('active', tab==='surplus');
+  document.getElementById('tab-legend').classList.toggle('active', tab==='legend');
   openId=null;
   render();
 }
 
+function buildLegend(){
+  return `<div style="max-width:860px;display:flex;flex-direction:column;gap:14px;padding-bottom:20px;">
+  <div class="pc" style="background:#fff;border-color:#e5e7eb;">
+    <div class="pc-title">🎯 HOW THE SCORE WORKS</div>
+    <p style="font-size:.79rem;color:#374151;line-height:1.6;margin-bottom:12px;">Each lead is scored 0–100 combining <b>seller motivation</b> and <b>deadline urgency</b>. High score = act now.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      <div style="border-radius:8px;padding:10px 12px;background:#fff5f5;border-left:4px solid #dc2626;">
+        <div style="font-size:.88rem;font-weight:800;color:#dc2626;">90–100</div>
+        <div style="font-size:.7rem;font-weight:700;color:#dc2626;margin:2px 0 5px;text-transform:uppercase;">Urgent</div>
+        <div style="font-size:.72rem;color:#374151;line-height:1.5;">Contact today. Out-of-state PR or sale within 3 days.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;background:#fff8f0;border-left:4px solid #ea580c;">
+        <div style="font-size:.85rem;font-weight:800;color:#ea580c;">80–89</div>
+        <div style="font-size:.7rem;font-weight:700;color:#ea580c;margin:2px 0 5px;text-transform:uppercase;">Hot</div>
+        <div style="font-size:.72rem;color:#374151;line-height:1.5;">Contact this week. Strong motivation or sale within 14 days.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;background:#fffbeb;border-left:4px solid #ca8a04;">
+        <div style="font-size:.82rem;font-weight:800;color:#ca8a04;">60–79</div>
+        <div style="font-size:.7rem;font-weight:700;color:#ca8a04;margin:2px 0 5px;text-transform:uppercase;">Warm</div>
+        <div style="font-size:.72rem;color:#374151;line-height:1.5;">Work this month. Good opportunity, more time available.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;background:#f9fafb;border-left:4px solid #9ca3af;">
+        <div style="font-size:.82rem;font-weight:800;color:#9ca3af;">0–59</div>
+        <div style="font-size:.7rem;font-weight:700;color:#9ca3af;margin:2px 0 5px;text-transform:uppercase;">Watch</div>
+        <div style="font-size:.72rem;color:#374151;line-height:1.5;">Low priority. Monitor but don't invest much time yet.</div>
+      </div>
+    </div>
+  </div>
+  <div class="pc" style="background:#fff;border-color:#e5e7eb;">
+    <div class="pc-title">📋 LEAD TYPES</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span class="tpill tp-FORECLOSURE" style="flex-shrink:0;margin-top:1px;">FORECLOSURE</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Bank reclaiming property. Contact owner before sale — they may want to sell instead.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span class="tpill tp-PROBATE" style="flex-shrink:0;margin-top:1px;">PROBATE</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Owner died. Contact the Personal Representative (PR) — never the deceased. Out-of-state PRs are most motivated.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span class="tpill tp-TAX-DEED" style="flex-shrink:0;margin-top:1px;">TAX DEED</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Going to auction for back taxes. Owner may sell to avoid losing everything.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span class="tpill tp-NOA" style="flex-shrink:0;margin-top:1px;">NOA</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Notice of Action — early warning before formal foreclosure. More time to negotiate.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;"><span class="tpill tp-MOBILE-HOME" style="flex-shrink:0;margin-top:1px;">MOBILE HOME</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Manufactured home for sale. May include land — check parcel.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;"><span class="tpill tp-PUBLIC\ SALE" style="flex-shrink:0;margin-top:1px;">PUBLIC SALE</span><span style="font-size:.73rem;color:#374151;line-height:1.45;">Storage unit auction or similar. Call the number listed directly.</span></div>
+    </div>
+  </div>
+  <div class="pc" style="background:#faf5ff;border-color:#ddd6fe;">
+    <div class="pc-title">⚡ SURPLUS TAB — WHAT IT IS</div>
+    <p style="font-size:.79rem;color:#374151;line-height:1.6;">When a foreclosure or tax deed auction date <b>passes</b>, it moves to the Surplus tab. If the property sold for more than the debt, the former owner has <b>unclaimed funds at the courthouse</b> — they usually don't know. Your angle: help them claim it. Warm, low-pressure outreach.</p>
+  </div>
+  <div class="pc" style="background:#fff;border-color:#e5e7eb;">
+    <div class="pc-title">✅ VA DAILY WORKFLOW</div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      ${[
+        ['Start with red rows','These expire in 3 days or less. Do these first.'],
+        ['Click a row to expand','Review Heat Signals, find contact info for the PR or owner.'],
+        ['Use TruePeopleSearch','Find phone and address. Fill in the fields in the People section.'],
+        ['Update GHL status','After each action: Not Sent → Sent to GHL → Contacted → In Pipeline or Dead Lead.'],
+        ['Check Surplus tab daily','New surplus leads appear here as auction dates pass. Warm outreach opportunity.'],
+        ['Export at end of day','Saves your progress. Import on another device to sync with the team.']
+      ].map(([title,desc],i)=>`<div style="display:flex;gap:10px;align-items:flex-start;font-size:.77rem;color:#374151;">
+        <span style="background:#0f172a;color:#fff;border-radius:50%;width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:700;flex-shrink:0;">${i+1}</span>
+        <span><b>${title}</b> — ${desc}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>`;
+}
+
 function render(){
+  if(currentTab==='legend'){
+    const sCount=LEADS.filter(l=>{const d=daysLeft(l.deadline);return d!==null&&d<0&&(l.type==='FORECLOSURE'||l.type==='TAX DEED'||l.type==='PUBLIC SALE'||l.type==='MOBILE HOME');}).length;
+    document.getElementById('badge-active').textContent=LEADS.length-sCount;
+    document.getElementById('badge-surplus').textContent=sCount;
+    document.getElementById('tbcount').textContent='';
+    document.getElementById('list').innerHTML=buildLegend();
+    return;
+  }
   const srch=document.getElementById('search').value.toLowerCase();
   const ft=document.getElementById('ft').value;
   const fg=document.getElementById('fg').value;
