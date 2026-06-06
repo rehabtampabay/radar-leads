@@ -19,9 +19,6 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .hbtn-ghost:hover{background:rgba(255,255,255,.18);color:#fff;}
 #autosave{font-size:.7rem;color:#34d399;display:none;}
 
-/* ── ALERT ── */
-#alert-bar{display:none;background:#dc2626;color:#fff;padding:8px 24px;font-size:.78rem;font-weight:600;align-items:center;gap:6px;flex-wrap:wrap;}
-
 /* ── TOOLBAR ── */
 .toolbar{background:#f8f9fc;border-bottom:1px solid #cdd3e0;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:52px;z-index:200;}
 .toolbar input{border:1px solid #d1d5db;border-radius:7px;padding:6px 11px;font-size:.8rem;width:210px;background:#f9fafb;outline:none;transition:.15s;}
@@ -39,6 +36,10 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .lrow{border-radius:10px;overflow:hidden;background:#fff;border:1px solid #d1d5db;transition:box-shadow .12s;}
 .lrow:hover{box-shadow:0 3px 16px rgba(0,0,0,.13);}
 .lrow.is-removed{opacity:.4;filter:grayscale(.5);}
+.lrow.tier-urgent .lrow-head{background:#fff5f5;}
+.lrow.tier-urgent{border-left:4px solid #dc2626 !important;border-color:#fca5a5;}
+.lrow.tier-hot .lrow-head{background:#fff8f0;}
+.lrow.tier-hot{border-left:4px solid #ea580c !important;}
 
 .lrow-head{display:grid;grid-template-columns:3px 52px minmax(0,1fr) 100px 90px 110px 28px;align-items:center;cursor:pointer;min-height:48px;gap:0;user-select:none;}
 .lrow-head:hover .lrow-name{color:#2563eb;}
@@ -50,11 +51,11 @@ a{color:#2563eb;text-decoration:none;}a:hover{text-decoration:underline;}
 .bar-watch{background:#9ca3af;}
 .bar-passed{background:#e5e7eb;}
 
-.lscore{text-align:center;font-size:.82rem;font-weight:800;padding:0 6px;}
-.sc-urgent{color:#dc2626;}
-.sc-hot{color:#ea580c;}
+.lscore{text-align:center;font-size:.82rem;font-weight:800;padding:0 6px;min-width:44px;}
+.sc-urgent{color:#dc2626;font-size:.88rem;}
+.sc-hot{color:#ea580c;font-size:.85rem;}
 .sc-warm{color:#ca8a04;}
-.sc-watch{color:#9ca3af;}
+.sc-watch{color:#9ca3af;font-size:.78rem;}
 
 .lname-wrap{padding:10px 12px 10px 8px;min-width:0;}
 .lrow-name{font-weight:600;font-size:.87rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#111827;transition:color .12s;}
@@ -183,8 +184,6 @@ footer{text-align:center;padding:16px;font-size:.68rem;color:#d1d5db;}
   </div>
 </div>
 
-<div id="alert-bar"></div>
-
 <div class="toolbar">
   <input type="text" id="search" placeholder="Search name, address, case #…" oninput="render()">
   <select id="fc" onchange="render()">
@@ -275,6 +274,7 @@ function render(){
   const sort=document.getElementById('sort').value;
   const hp=document.getElementById('hp').checked;
   const hr=document.getElementById('hr').checked;
+  const fc=document.getElementById('fc')?.value||'';
 
   let leads=LEADS.filter(l=>{
     const s=ls(l.id);
@@ -298,15 +298,9 @@ function render(){
     return da-db||b.score-a.score;
   });
 
-  // alert bar
-  const urg=LEADS.filter(l=>{const d=daysLeft(l.deadline);return d!==null&&d>=0&&d<=3&&l.score>0;});
-  const ab=document.getElementById('alert-bar');
-  if(urg.length){
-    ab.style.display='flex';
-    ab.innerHTML='⚠️ &nbsp;ACT NOW: &nbsp;'+urg.map(l=>`<b>${l.name}</b> — ${dlInfo(l.deadline).days}`).join('&nbsp; · &nbsp;');
-  } else ab.style.display='none';
+  // no alert bar — urgent leads highlighted red in rows
 
-  document.getElementById('tbcount').textContent=`${leads.length} of ${LEADS.length} leads`;
+  document.getElementById('tbcount').textContent=leads.length===LEADS.length?`${LEADS.length} leads`:`${leads.length} of ${LEADS.length}`;
 
   const list=document.getElementById('list');
   list.innerHTML=leads.length ? leads.map(l=>buildRow(l)).join('') : '<div class="empty">No leads match your filters.</div>';
@@ -328,7 +322,7 @@ function buildRow(l){
   const isRemoved=s.removed;
   const hasCase=l.caseNum&&!l.caseNum.startsWith('Cert')&&!l.caseNum.startsWith('Multiple')&&!l.caseNum.startsWith('Parcel');
 
-  return `<div class="lrow${isRemoved?' is-removed':''}" id="row-${l.id}">
+  return `<div class="lrow${isRemoved?' is-removed':''} tier-${t}" id="row-${l.id}">
 <div class="lrow-head" id="h-${l.id}" onclick="toggle('${l.id}')">
   <div class="lbar ${barCls(t)}"></div>
   <div class="lscore ${scCls(t)}">${l.score||'—'}</div>
