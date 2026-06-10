@@ -283,7 +283,19 @@ function scCls(t){ return {urgent:'sc-urgent',hot:'sc-hot',warm:'sc-warm',watch:
 function barCls(t){ return 'bar-'+t; }
 function tpCls(type){ return 'tp-'+type.replace(/ /g,'-'); }
 function gCls(v){ return {['Not Sent']:'g-ns',['Sent to GHL']:'g-sent',['In Pipeline']:'g-pip',['Contacted']:'g-cont',['Closed']:'g-closed',['Dead Lead']:'g-dead'}[v]||'g-ns'; }
+function extractCityState(addr){
+  if(!addr) return '';
+  const m=addr.match(/,\s*([A-Za-z][A-Za-z\s]+?)\s+([A-Z]{2})\s+\d{5}/);
+  if(m) return m[1].trim()+', '+m[2];
+  const m2=addr.match(/([A-Za-z][A-Za-z\s]+?)\s+([A-Z]{2})\s+\d{5}/);
+  return m2 ? m2[1].trim()+', '+m2[2] : '';
+}
 function tpsUrl(n){ return 'https://www.truepeoplesearch.com/results?name='+encodeURIComponent(n.replace(/^Estate of /i,'').replace(/ [—–].*/,'').replace(/ \/.*/,'').replace(/\s*\(.*/,'').trim()); }
+function tpsUrlPR(first,last,addr){
+  const name=(first+' '+last).trim(); if(!name) return null;
+  const city=extractCityState(addr);
+  return 'https://www.truepeoplesearch.com/results?name='+encodeURIComponent(name)+(city?'&citystatezip='+encodeURIComponent(city):'');
+}
 function paUrl(n){ const w=n.replace(/^Estate of /i,'').replace(/ [—–].*/,'').replace(/ \/.*/,'').replace(/\s*\(.*/,'').trim().split(' '); return `https://www.pascopa.com/Search/Owner?lastName=${encodeURIComponent(w[w.length-1]||'')}&firstName=${encodeURIComponent(w[0]||'')}`; }
 function clerkUrl(cn){ if(!cn||cn.startsWith('Cert')) return 'https://pascoclerk.com/public-access/'; return `https://pascoclerk.com/public-access/?caseNum=${encodeURIComponent(cn)}`; }
 
@@ -431,6 +443,7 @@ function buildRow(l){
   const isProbate=l.type==='PROBATE';
   const prFirst=s.prFirst||l.cf||'';
   const prLast=s.prLast||l.cl||'';
+  const prAddrVal=s.prAddr||(isProbate?l.addr:'');
   const pdfLink=s.pdf||PDF[l.edition]||'';
   const isRemoved=s.removed;
   const hasCase=l.caseNum&&!l.caseNum.startsWith('Cert')&&!l.caseNum.startsWith('Multiple')&&!l.caseNum.startsWith('Parcel');
@@ -508,6 +521,7 @@ function buildRow(l){
           <div class="pc-person-label pr">${isProbate?'✅ Personal Representative — WHO TO CONTACT':'📞 Point of Contact'}</div>
           <div class="pc-person-name">${prFirst||prLast ? `${prFirst} ${prLast}`.trim() : '<span style="color:#9ca3af;font-style:italic;font-size:.78rem;">Run TruePeopleSearch to find</span>'}</div>
           ${isProbate?'<div class="pc-person-note">→ Send this person to GHL</div>':''}
+          ${isProbate&&l.addr?`<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:6px 10px;margin-bottom:8px;font-size:.72rem;color:#1e40af;line-height:1.5;"><span style="font-weight:700;text-transform:uppercase;letter-spacing:.4px;font-size:.62rem;display:block;margin-bottom:2px;">📍 Address from Notice</span>${l.addr}</div>`:''}
           <div class="fi-group" style="margin-top:8px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
               <div class="fi-row"><label class="fi-lbl">First Name</label><input class="fi" value="${prFirst}" onchange="set('${l.id}','prFirst',this.value)" placeholder="First"></div>
@@ -517,7 +531,7 @@ function buildRow(l){
               <div class="fi-row"><label class="fi-lbl">Phone</label><input class="fi" value="${s.prPhone}" onchange="set('${l.id}','prPhone',this.value)" placeholder="(000) 000-0000"></div>
               <div class="fi-row"><label class="fi-lbl">Email</label><input class="fi" value="${s.prEmail}" onchange="set('${l.id}','prEmail',this.value)" placeholder="email@example.com"></div>
             </div>
-            <div class="fi-row"><label class="fi-lbl">Mailing Address</label><input class="fi" value="${s.prAddr}" onchange="set('${l.id}','prAddr',this.value)" placeholder="City, State ZIP"></div>
+            <div class="fi-row"><label class="fi-lbl">Mailing Address</label><input class="fi" value="${prAddrVal}" onchange="set('${l.id}','prAddr',this.value)" placeholder="City, State ZIP"></div>
           </div>
         </div>
 
@@ -529,8 +543,11 @@ function buildRow(l){
     <div class="pc pc-full">
       <div class="pc-title"><span class="pc-title-icon">⚡</span> Quick Actions</div>
       <div class="actions">
-        <a class="abtn abtn-blue" href="${tpsUrl(l.name)}" target="_blank">🔍 TruePeopleSearch</a>
-        <a class="abtn abtn-green" href="${paUrl(l.name)}" target="_blank">🏠 Pasco PA</a>
+        ${isProbate&&(prFirst||prLast)
+          ? `<a class="abtn abtn-blue" href="${tpsUrlPR(prFirst,prLast,l.addr)}" target="_blank">🔍 Search PR${extractCityState(l.addr)?' ('+extractCityState(l.addr)+')':''}</a>`
+          : `<a class="abtn abtn-blue" href="${tpsUrl(l.name)}" target="_blank">🔍 TruePeopleSearch</a>`}
+        ${isProbate&&!(prFirst||prLast)?`<a class="abtn abtn-blue" style="opacity:.65;" href="${tpsUrl(l.name)}" target="_blank">🔍 TPS (fill PR name first)</a>`:''}
+        <a class="abtn abtn-green" href="${paUrl(l.name)}" target="_blank">🏠 ${isProbate?'Search by Deceased':'Pasco PA'}</a>
         <a class="abtn abtn-purple" href="${clerkUrl(l.caseNum)}" target="_blank">⚖️ Clerk of Court${hasCase?' (Case #)':''}</a>
         ${pdfLink?`<a class="abtn abtn-amber" href="${pdfLink}" target="_blank">📄 View PDF — ${l.edition}</a>`:`<span class="abtn abtn-amber" style="opacity:.5;cursor:pointer;" onclick="addPdf('${l.id}')">📄 Add PDF Link</span>`}
         ${isRemoved
